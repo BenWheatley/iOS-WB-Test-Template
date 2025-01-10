@@ -344,13 +344,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		84E0D1DB2D1AE26E00A55CCB /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 				B5CE11C32D30756800F3D0A2 /* test-asset-id=EOSISH.json in Resources */,
 				B5CE11C52D30756800F3D0A2 /* test-assets.json in Resources */,
 				B5CE11C92D30756800F3D0A2 /* test-asset-exchangerate=BTC-USD.json in Resources */,
@@ -360,6 +353,13 @@
 				B54C13742D31438F0086AB76 /* test-asset-id=RLUSD.json in Resources */,
 				B5CE11CA2D30756800F3D0A2 /* test-asset-icons=64.json in Resources */,
 				B5CE11D72D31310C00F3D0A2 /* test-asset-id=REBUS.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		84E0D1DB2D1AE26E00A55CCB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
