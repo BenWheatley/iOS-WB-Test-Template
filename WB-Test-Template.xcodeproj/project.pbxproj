@@ -20,6 +20,7 @@
 		84E0D1FC2D1AE64400A55CCB /* AssetListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E0D1F52D1AE64400A55CCB /* AssetListView.swift */; };
 		84E0D1FD2D1AE64400A55CCB /* AssetListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E0D1F72D1AE64400A55CCB /* AssetListViewModel.swift */; };
 		B54C13742D31438F0086AB76 /* test-asset-id=RLUSD.json in Resources */ = {isa = PBXBuildFile; fileRef = B54C13732D31438F0086AB76 /* test-asset-id=RLUSD.json */; };
+		B5542DEC2D316C1A001B9AC4 /* WB_Test_Template_ModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5542DEB2D316C1A001B9AC4 /* WB_Test_Template_ModelTests.swift */; };
 		B5CE11B32D301CB900F3D0A2 /* AutoDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5CE11B22D301CB900F3D0A2 /* AutoDecoder.swift */; };
 		B5CE11B62D301D0800F3D0A2 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5CE11B52D301D0800F3D0A2 /* NetworkError.swift */; };
 		B5CE11C32D30756800F3D0A2 /* test-asset-id=EOSISH.json in Resources */ = {isa = PBXBuildFile; fileRef = B5CE11C02D30756700F3D0A2 /* test-asset-id=EOSISH.json */; };
@@ -69,6 +70,7 @@
 		84E0D1F52D1AE64400A55CCB /* AssetListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetListView.swift; sourceTree = "<group>"; };
 		84E0D1F72D1AE64400A55CCB /* AssetListViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetListViewModel.swift; sourceTree = "<group>"; };
 		B54C13732D31438F0086AB76 /* test-asset-id=RLUSD.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "test-asset-id=RLUSD.json"; sourceTree = "<group>"; };
+		B5542DEB2D316C1A001B9AC4 /* WB_Test_Template_ModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WB_Test_Template_ModelTests.swift; sourceTree = "<group>"; };
 		B5CE11B22D301CB900F3D0A2 /* AutoDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoDecoder.swift; sourceTree = "<group>"; };
 		B5CE11B52D301D0800F3D0A2 /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
 		B5CE11BA2D30756700F3D0A2 /* test-asset-exchangerate=BTC-USD.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "test-asset-exchangerate=BTC-USD.json"; sourceTree = "<group>"; };
@@ -158,6 +160,7 @@
 			isa = PBXGroup;
 			children = (
 				B5CE11C22D30756700F3D0A2 /* Test assets from API */,
+				B5542DEB2D316C1A001B9AC4 /* WB_Test_Template_ModelTests.swift */,
 			);
 			path = "WB-Test-TemplateTests";
 			sourceTree = "<group>";
@@ -389,6 +392,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B5542DEC2D316C1A001B9AC4 /* WB_Test_Template_ModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
