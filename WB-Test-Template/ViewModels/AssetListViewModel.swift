@@ -39,7 +39,7 @@ class AssetListViewModel: ObservableObject {
     private func applyFilters() {
         filteredAssets = assets.filter { asset in
             let matchesSearch = searchText.isEmpty || 
-                asset.name.localizedCaseInsensitiveContains(searchText) ||
+                (asset.name?.localizedCaseInsensitiveContains(searchText) == true) ||
                 asset.assetId.localizedCaseInsensitiveContains(searchText)
             
             let matchesFavorites = !showFavoritesOnly || asset.isFavorite

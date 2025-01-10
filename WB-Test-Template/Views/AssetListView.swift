@@ -49,7 +49,7 @@ struct AssetRowView: View {
             .frame(width: 32, height: 32)
             
             VStack(alignment: .leading) {
-                Text(asset.name)
+				Text(asset.name ?? asset.assetId) // The asset name is observed to sometimes be nil, how such a condition should be displayed is a UI design decision: leaving this line blank is one option; displaying both lines and taking the name from the ID value is a second possibility; a third would be taking the name from the ID value and instead leave the `Text(asset.assetId)` line blank when that happens
                     .font(.headline)
                 Text(asset.assetId)
                     .font(.subheadline)
