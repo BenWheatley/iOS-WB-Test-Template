@@ -1,0 +1,20 @@
+[
+  {
+	"asset_id": "MST",
+	"name": "MustangCoin",
+	"type_is_crypto": 1,
+	"data_quote_start": "2017-03-18T00:00:00.0000000Z",
+	"data_quote_end": "2024-12-15T00:00:00.0000000Z",
+	"data_orderbook_start": "2017-03-14T20:22:26.1841794Z",
+	"data_orderbook_end": "2023-07-06T00:00:00.0000000Z",
+	"data_trade_start": "2016-11-20T00:00:00.0000000Z",
+	"data_trade_end": "2024-12-02T00:00:00.0000000Z",
+	"data_symbols_count": 17,
+	"volume_1hrs_usd": 0,
+	"volume_1day_usd": 0,
+	"volume_1mth_usd": 1.52,
+	"id_icon": "98061c5d-9b5d-43f7-97b9-8ee9a07b49c0",
+	"data_start": "2016-11-20",
+	"data_end": "2024-12-15"
+  }
+]

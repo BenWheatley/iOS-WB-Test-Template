@@ -20,7 +20,16 @@
 		84E0D1FB2D1AE64400A55CCB /* AssetDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E0D1F42D1AE64400A55CCB /* AssetDetailView.swift */; };
 		84E0D1FC2D1AE64400A55CCB /* AssetListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E0D1F52D1AE64400A55CCB /* AssetListView.swift */; };
 		84E0D1FD2D1AE64400A55CCB /* AssetListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E0D1F72D1AE64400A55CCB /* AssetListViewModel.swift */; };
+		B54C13742D31438F0086AB76 /* test-asset-id=RLUSD.json in Resources */ = {isa = PBXBuildFile; fileRef = B54C13732D31438F0086AB76 /* test-asset-id=RLUSD.json */; };
 		B5CE11B32D301CB900F3D0A2 /* AutoDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5CE11B22D301CB900F3D0A2 /* AutoDecoder.swift */; };
+		B5CE11C32D30756800F3D0A2 /* test-asset-id=EOSISH.json in Resources */ = {isa = PBXBuildFile; fileRef = B5CE11C02D30756700F3D0A2 /* test-asset-id=EOSISH.json */; };
+		B5CE11C52D30756800F3D0A2 /* test-assets.json in Resources */ = {isa = PBXBuildFile; fileRef = B5CE11C12D30756700F3D0A2 /* test-assets.json */; };
+		B5CE11C92D30756800F3D0A2 /* test-asset-exchangerate=BTC-USD.json in Resources */ = {isa = PBXBuildFile; fileRef = B5CE11BA2D30756700F3D0A2 /* test-asset-exchangerate=BTC-USD.json */; };
+		B5CE11CA2D30756800F3D0A2 /* test-asset-icons=64.json in Resources */ = {isa = PBXBuildFile; fileRef = B5CE11BF2D30756700F3D0A2 /* test-asset-icons=64.json */; };
+		B5CE11CD2D307D4400F3D0A2 /* test-fail.json in Resources */ = {isa = PBXBuildFile; fileRef = B5CE11CC2D307D4400F3D0A2 /* test-fail.json */; };
+		B5CE11D32D31310600F3D0A2 /* test-asset-id=MST.json in Resources */ = {isa = PBXBuildFile; fileRef = B5CE11D22D31310600F3D0A2 /* test-asset-id=MST.json */; };
+		B5CE11D52D31310B00F3D0A2 /* test-asset-id=METADOGEV2.json in Resources */ = {isa = PBXBuildFile; fileRef = B5CE11D42D31310B00F3D0A2 /* test-asset-id=METADOGEV2.json */; };
+		B5CE11D72D31310C00F3D0A2 /* test-asset-id=REBUS.json in Resources */ = {isa = PBXBuildFile; fileRef = B5CE11D62D31310C00F3D0A2 /* test-asset-id=REBUS.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,7 +67,16 @@
 		84E0D1F42D1AE64400A55CCB /* AssetDetailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetDetailView.swift; sourceTree = "<group>"; };
 		84E0D1F52D1AE64400A55CCB /* AssetListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetListView.swift; sourceTree = "<group>"; };
 		84E0D1F72D1AE64400A55CCB /* AssetListViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetListViewModel.swift; sourceTree = "<group>"; };
+		B54C13732D31438F0086AB76 /* test-asset-id=RLUSD.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "test-asset-id=RLUSD.json"; sourceTree = "<group>"; };
 		B5CE11B22D301CB900F3D0A2 /* AutoDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoDecoder.swift; sourceTree = "<group>"; };
+		B5CE11BA2D30756700F3D0A2 /* test-asset-exchangerate=BTC-USD.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "test-asset-exchangerate=BTC-USD.json"; sourceTree = "<group>"; };
+		B5CE11BF2D30756700F3D0A2 /* test-asset-icons=64.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "test-asset-icons=64.json"; sourceTree = "<group>"; };
+		B5CE11C02D30756700F3D0A2 /* test-asset-id=EOSISH.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "test-asset-id=EOSISH.json"; sourceTree = "<group>"; };
+		B5CE11C12D30756700F3D0A2 /* test-assets.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "test-assets.json"; sourceTree = "<group>"; };
+		B5CE11CC2D307D4400F3D0A2 /* test-fail.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "test-fail.json"; sourceTree = "<group>"; };
+		B5CE11D22D31310600F3D0A2 /* test-asset-id=MST.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "test-asset-id=MST.json"; sourceTree = "<group>"; };
+		B5CE11D42D31310B00F3D0A2 /* test-asset-id=METADOGEV2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "test-asset-id=METADOGEV2.json"; sourceTree = "<group>"; };
+		B5CE11D62D31310C00F3D0A2 /* test-asset-id=REBUS.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "test-asset-id=REBUS.json"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,6 +154,7 @@
 			isa = PBXGroup;
 			children = (
 				84E0D1D72D1AE26E00A55CCB /* WB_Test_TemplateTests.swift */,
+				B5CE11C22D30756700F3D0A2 /* Test assets from API */,
 			);
 			path = "WB-Test-TemplateTests";
 			sourceTree = "<group>";
@@ -188,6 +207,22 @@
 				B5CE11B22D301CB900F3D0A2 /* AutoDecoder.swift */,
 			);
 			path = Utilities;
+			sourceTree = "<group>";
+		};
+		B5CE11C22D30756700F3D0A2 /* Test assets from API */ = {
+			isa = PBXGroup;
+			children = (
+				B5CE11BA2D30756700F3D0A2 /* test-asset-exchangerate=BTC-USD.json */,
+				B5CE11BF2D30756700F3D0A2 /* test-asset-icons=64.json */,
+				B5CE11C02D30756700F3D0A2 /* test-asset-id=EOSISH.json */,
+				B5CE11D22D31310600F3D0A2 /* test-asset-id=MST.json */,
+				B5CE11D42D31310B00F3D0A2 /* test-asset-id=METADOGEV2.json */,
+				B5CE11D62D31310C00F3D0A2 /* test-asset-id=REBUS.json */,
+				B54C13732D31438F0086AB76 /* test-asset-id=RLUSD.json */,
+				B5CE11C12D30756700F3D0A2 /* test-assets.json */,
+				B5CE11CC2D307D4400F3D0A2 /* test-fail.json */,
+			);
+			path = "Test assets from API";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -310,6 +345,15 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B5CE11C32D30756800F3D0A2 /* test-asset-id=EOSISH.json in Resources */,
+				B5CE11C52D30756800F3D0A2 /* test-assets.json in Resources */,
+				B5CE11C92D30756800F3D0A2 /* test-asset-exchangerate=BTC-USD.json in Resources */,
+				B5CE11CD2D307D4400F3D0A2 /* test-fail.json in Resources */,
+				B5CE11D32D31310600F3D0A2 /* test-asset-id=MST.json in Resources */,
+				B5CE11D52D31310B00F3D0A2 /* test-asset-id=METADOGEV2.json in Resources */,
+				B54C13742D31438F0086AB76 /* test-asset-id=RLUSD.json in Resources */,
+				B5CE11CA2D30756800F3D0A2 /* test-asset-icons=64.json in Resources */,
+				B5CE11D72D31310C00F3D0A2 /* test-asset-id=REBUS.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

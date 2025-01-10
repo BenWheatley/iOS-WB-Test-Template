@@ -1,0 +1,20 @@
+[
+  {
+	"asset_id": "REBUS",
+	"name": "REBUS",
+	"type_is_crypto": 1,
+	"data_quote_start": "2023-01-08T00:00:00.0000000Z",
+	"data_quote_end": "2024-12-15T00:00:00.0000000Z",
+	"data_orderbook_start": "2023-01-08T00:00:00.0000000Z",
+	"data_orderbook_end": "2023-06-27T00:00:00.0000000Z",
+	"data_trade_start": "2023-01-07T00:00:00.0000000Z",
+	"data_trade_end": "2024-12-15T00:00:00.0000000Z",
+	"data_symbols_count": 3,
+	"volume_1hrs_usd": 0,
+	"volume_1day_usd": 13.83,
+	"volume_1mth_usd": 964187.23,
+	"price_usd": 0.000709961113711115,
+	"data_start": "2023-01-07",
+	"data_end": "2024-12-15"
+  }
+]
