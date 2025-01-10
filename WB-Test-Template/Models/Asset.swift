@@ -2,16 +2,16 @@ import Foundation
 
 struct Asset: Codable, Identifiable {
     let id = UUID()
-    let assetId: String
-    let name: String
-    let typeIsCrypto: Int
-    let dataQuoteStart: String?
-    let dataQuoteEnd: String?
-    let dataOrderbookStart: String?
-    let dataOrderbookEnd: String?
-    let dataTradeStart: String?
-    let dataTradeEnd: String?
-    let dataSymbolsCount: Int
+    let assetId: String // API docs claim this can be nil: not actually observed, seems suspicious that it could be in practice
+    let name: String? // Observed: can be nil, see test data for "RLUSD"
+    let typeIsCrypto: Int32
+    let dataQuoteStart: Date?
+    let dataQuoteEnd: Date?
+    let dataOrderbookStart: Date?
+    let dataOrderbookEnd: Date?
+    let dataTradeStart: Date?
+    let dataTradeEnd: Date?
+    let dataSymbolsCount: Int64?
     let volume1HrsUsd: Double?
     let volume1DayUsd: Double?
     let volume1MthUsd: Double?
