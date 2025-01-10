@@ -42,4 +42,9 @@ struct Asset: Codable, Identifiable {
 }
 
 extension Asset: AutoDecoder {
+	static let dateDecodingStrategy: JSONDecoder.DateDecodingStrategy? = {
+		let formatter = DateFormatter()
+		formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSX" // Matches the date format in the JSON
+		return .formatted(formatter)
+	}()
 }
