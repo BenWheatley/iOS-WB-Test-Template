@@ -15,7 +15,8 @@ class AssetListViewModel: ObservableObject {
         DispatchQueue.main.async { [weak self] in
             Task {
                 do {
-                    self?.assets = try await NetworkService.shared.fetchAssets()
+					let assetData = try await NetworkService.shared.fetchAssetsData()
+					self?.assets = try Asset.tryToDecodeArray(from: assetData)
                     self?.filterAssets(searchText: self?.searchText ?? "")
                 } catch {
                     self?.error = error.localizedDescription
