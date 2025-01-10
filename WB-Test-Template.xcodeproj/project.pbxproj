@@ -22,6 +22,7 @@
 		84E0D1FD2D1AE64400A55CCB /* AssetListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E0D1F72D1AE64400A55CCB /* AssetListViewModel.swift */; };
 		B54C13742D31438F0086AB76 /* test-asset-id=RLUSD.json in Resources */ = {isa = PBXBuildFile; fileRef = B54C13732D31438F0086AB76 /* test-asset-id=RLUSD.json */; };
 		B5CE11B32D301CB900F3D0A2 /* AutoDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5CE11B22D301CB900F3D0A2 /* AutoDecoder.swift */; };
+		B5CE11B62D301D0800F3D0A2 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5CE11B52D301D0800F3D0A2 /* NetworkError.swift */; };
 		B5CE11C32D30756800F3D0A2 /* test-asset-id=EOSISH.json in Resources */ = {isa = PBXBuildFile; fileRef = B5CE11C02D30756700F3D0A2 /* test-asset-id=EOSISH.json */; };
 		B5CE11C52D30756800F3D0A2 /* test-assets.json in Resources */ = {isa = PBXBuildFile; fileRef = B5CE11C12D30756700F3D0A2 /* test-assets.json */; };
 		B5CE11C92D30756800F3D0A2 /* test-asset-exchangerate=BTC-USD.json in Resources */ = {isa = PBXBuildFile; fileRef = B5CE11BA2D30756700F3D0A2 /* test-asset-exchangerate=BTC-USD.json */; };
@@ -69,6 +70,7 @@
 		84E0D1F72D1AE64400A55CCB /* AssetListViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetListViewModel.swift; sourceTree = "<group>"; };
 		B54C13732D31438F0086AB76 /* test-asset-id=RLUSD.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "test-asset-id=RLUSD.json"; sourceTree = "<group>"; };
 		B5CE11B22D301CB900F3D0A2 /* AutoDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoDecoder.swift; sourceTree = "<group>"; };
+		B5CE11B52D301D0800F3D0A2 /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
 		B5CE11BA2D30756700F3D0A2 /* test-asset-exchangerate=BTC-USD.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "test-asset-exchangerate=BTC-USD.json"; sourceTree = "<group>"; };
 		B5CE11BF2D30756700F3D0A2 /* test-asset-icons=64.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "test-asset-icons=64.json"; sourceTree = "<group>"; };
 		B5CE11C02D30756700F3D0A2 /* test-asset-id=EOSISH.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "test-asset-id=EOSISH.json"; sourceTree = "<group>"; };
@@ -171,6 +173,7 @@
 		84E0D1F12D1AE64400A55CCB /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				B5CE11B52D301D0800F3D0A2 /* NetworkError.swift */,
 				84E0D1F02D1AE64400A55CCB /* NetworkService.swift */,
 			);
 			path = Services;
@@ -373,6 +376,7 @@
 				B5CE11B32D301CB900F3D0A2 /* AutoDecoder.swift in Sources */,
 				84E0D1F92D1AE64400A55CCB /* NetworkService.swift in Sources */,
 				84E0D1C82D1AE26C00A55CCB /* ContentView.swift in Sources */,
+				B5CE11B62D301D0800F3D0A2 /* NetworkError.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
