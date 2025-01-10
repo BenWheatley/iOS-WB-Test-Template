@@ -28,6 +28,8 @@
 		B5CE11C92D30756800F3D0A2 /* test-asset-exchangerate=BTC-USD.json in Resources */ = {isa = PBXBuildFile; fileRef = B5CE11BA2D30756700F3D0A2 /* test-asset-exchangerate=BTC-USD.json */; };
 		B5CE11CA2D30756800F3D0A2 /* test-asset-icons=64.json in Resources */ = {isa = PBXBuildFile; fileRef = B5CE11BF2D30756700F3D0A2 /* test-asset-icons=64.json */; };
 		B5CE11CD2D307D4400F3D0A2 /* test-fail.json in Resources */ = {isa = PBXBuildFile; fileRef = B5CE11CC2D307D4400F3D0A2 /* test-fail.json */; };
+		B5CE11CF2D307FD100F3D0A2 /* AssetIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5CE11CE2D307FD100F3D0A2 /* AssetIcon.swift */; };
+		B5CE11D12D30811400F3D0A2 /* ExchangeRate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5CE11D02D30811400F3D0A2 /* ExchangeRate.swift */; };
 		B5CE11D32D31310600F3D0A2 /* test-asset-id=MST.json in Resources */ = {isa = PBXBuildFile; fileRef = B5CE11D22D31310600F3D0A2 /* test-asset-id=MST.json */; };
 		B5CE11D52D31310B00F3D0A2 /* test-asset-id=METADOGEV2.json in Resources */ = {isa = PBXBuildFile; fileRef = B5CE11D42D31310B00F3D0A2 /* test-asset-id=METADOGEV2.json */; };
 		B5CE11D72D31310C00F3D0A2 /* test-asset-id=REBUS.json in Resources */ = {isa = PBXBuildFile; fileRef = B5CE11D62D31310C00F3D0A2 /* test-asset-id=REBUS.json */; };
@@ -76,6 +78,8 @@
 		B5CE11C02D30756700F3D0A2 /* test-asset-id=EOSISH.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "test-asset-id=EOSISH.json"; sourceTree = "<group>"; };
 		B5CE11C12D30756700F3D0A2 /* test-assets.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "test-assets.json"; sourceTree = "<group>"; };
 		B5CE11CC2D307D4400F3D0A2 /* test-fail.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "test-fail.json"; sourceTree = "<group>"; };
+		B5CE11CE2D307FD100F3D0A2 /* AssetIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetIcon.swift; sourceTree = "<group>"; };
+		B5CE11D02D30811400F3D0A2 /* ExchangeRate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeRate.swift; sourceTree = "<group>"; };
 		B5CE11D22D31310600F3D0A2 /* test-asset-id=MST.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "test-asset-id=MST.json"; sourceTree = "<group>"; };
 		B5CE11D42D31310B00F3D0A2 /* test-asset-id=METADOGEV2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "test-asset-id=METADOGEV2.json"; sourceTree = "<group>"; };
 		B5CE11D62D31310C00F3D0A2 /* test-asset-id=REBUS.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "test-asset-id=REBUS.json"; sourceTree = "<group>"; };
@@ -183,6 +187,8 @@
 			isa = PBXGroup;
 			children = (
 				84E0D1F22D1AE64400A55CCB /* Asset.swift */,
+				B5CE11CE2D307FD100F3D0A2 /* AssetIcon.swift */,
+				B5CE11D02D30811400F3D0A2 /* ExchangeRate.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -368,8 +374,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				84E0D1C42D1AE26C00A55CCB /* WB_Test_TemplateApp.swift in Sources */,
+				B5CE11CF2D307FD100F3D0A2 /* AssetIcon.swift in Sources */,
 				84E0D1C62D1AE26C00A55CCB /* WB_Test_TemplateDocument.swift in Sources */,
 				84E0D1FC2D1AE64400A55CCB /* AssetListView.swift in Sources */,
+				B5CE11D12D30811400F3D0A2 /* ExchangeRate.swift in Sources */,
 				84E0D1FD2D1AE64400A55CCB /* AssetListViewModel.swift in Sources */,
 				84E0D1FB2D1AE64400A55CCB /* AssetDetailView.swift in Sources */,
 				84E0D1FA2D1AE64400A55CCB /* Asset.swift in Sources */,
