@@ -75,6 +75,7 @@
 		84E0D1F72D1AE64400A55CCB /* AssetListViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetListViewModel.swift; sourceTree = "<group>"; };
 		B54C13732D31438F0086AB76 /* test-asset-id=RLUSD.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "test-asset-id=RLUSD.json"; sourceTree = "<group>"; };
 		B5542DEB2D316C1A001B9AC4 /* WB_Test_Template_ModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WB_Test_Template_ModelTests.swift; sourceTree = "<group>"; };
+		B5542DED2D318926001B9AC4 /* ServerError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerError.swift; sourceTree = "<group>"; };
 		B5542DEF2D318F8D001B9AC4 /* WB_Test_Template_NetworkService_IntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WB_Test_Template_NetworkService_IntegrationTests.swift; sourceTree = "<group>"; };
 		B5542DF12D31A568001B9AC4 /* XCTestUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCTestUtilities.swift; sourceTree = "<group>"; };
 		B5CE11B02D301A5C00F3D0A2 /* WB_Test_Template_NetworkServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WB_Test_Template_NetworkServiceTests.swift; sourceTree = "<group>"; };
