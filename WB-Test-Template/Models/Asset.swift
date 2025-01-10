@@ -39,4 +39,7 @@ struct Asset: Codable, Identifiable {
         case volume1MthUsd = "volume_1mth_usd"
         case priceUsd = "price_usd"
     }
-} 
+}
+
+extension Asset: AutoDecoder {
+}

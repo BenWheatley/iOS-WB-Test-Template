@@ -10,6 +10,9 @@ import Foundation
 protocol AutoDecoder: Decodable {
 	static func tryToDecodeArray(from data: Data) throws -> [Self]
 	init(from data: Data) throws
+	
+	// Allows specification of custom date decoding strategy
+	static var dateDecodingStrategy: JSONDecoder.DateDecodingStrategy? { get }
 }
 
 extension AutoDecoder {
@@ -37,4 +40,6 @@ extension AutoDecoder {
 			throw NetworkError.decodingError
 		}
 	}
+	
+	static var dateDecodingStrategy: JSONDecoder.DateDecodingStrategy? { nil }
 }
