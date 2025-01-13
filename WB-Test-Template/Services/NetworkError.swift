@@ -9,8 +9,7 @@ import Foundation
 
 enum NetworkError: Error, Equatable {
 	case invalidURL
-	/// This is "no data" in the client level, as HTTP 550 "No data" would be a `serverError`
-	case noData
+	/// Note: "no data" moved into `serverError` under the assumption that this is supposed to represent HTTP 550, which is a server error
 	case decodingError
 	case serverError(RecognisedServerError?, String)
 	case offline
@@ -21,7 +20,7 @@ enum NetworkError: Error, Equatable {
 		case unauthorized
 		case forbidden
 		case tooManyRequests
-		/// This is "no data" as a `serverError`, if there is no data at the client level this would be `NetworkError.noData`
+		/// Moved from `NetworkError` because HTTP 550 ("no data") is classified as a server error
 		case noData
 		
 		init?(statusCode: Int) {

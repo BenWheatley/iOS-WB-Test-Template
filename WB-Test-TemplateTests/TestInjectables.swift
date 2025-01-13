@@ -24,6 +24,7 @@ struct TestInjectables: NetworkService.Injectables {
 		let testBundle: Bundle
 		let mockStatusCode: Int
 		let mockResourceName: String
+		public private(set) var callCount = 0
 		
 		init(mockStatusCode: Int, mockResourceName: String) {
 			testBundle = Bundle(for: type(of: self))
@@ -33,9 +34,11 @@ struct TestInjectables: NetworkService.Injectables {
 		
 		// Other sensible ways to test this would include the mock pointing to a locally hosted test server with a copy of the data — IMO putting test data on a test host would be better as it actually tests the networking code (so less chance that the test is testing itself instead of reality), but it's harder to demonstrate that kind of thing in a code challenge as then you'd need to know to set up the test host so that the tests can run.
 		func data(for request: URLRequest, delegate: (any URLSessionTaskDelegate)?) async throws -> (Data, URLResponse) {
+			callCount += 1
+			
 			guard let mockFileURL = testBundle.url(forResource: mockResourceName, withExtension: "json"),
 				  let mockData = try? Data(contentsOf: mockFileURL) else {
-				throw NetworkError.noData
+				throw NetworkError.serverError(.noData, "There's something wrong with this test")
 			}
 			guard let mockResponse = HTTPURLResponse(
 				url: request.url ?? mockFileURL,

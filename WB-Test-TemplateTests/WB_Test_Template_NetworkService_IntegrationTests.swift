@@ -5,7 +5,7 @@
 //  Created by Ben Wheatley on 10/01/2025.
 //
 
-import XCTest // Note: Can't use Testing framework, as that doesn't yet support `self.measure` which I want to use here
+import XCTest // Note: Was originally done without the Testing framework as I initially wanted to use `self.measure` which isn't supported in `Testing`, but I changed my mind and have not updated this code to the new framework
 import Combine
 @testable import WB_Test_Template
 
@@ -88,5 +88,46 @@ final class WB_Test_TemplateTests: XCTestCase {
 		.store(in: &cancellables)
 		
 		wait(for: [expectation], timeout: 1)
+	}
+	
+	func testRequestRetryMechanism() {
+		testRequestRetryMechanism(shouldRetry: true)
+		testRequestRetryMechanism(shouldRetry: false)
+	}
+	
+	func testRequestRetryMechanism(shouldRetry: Bool) {
+		let expectation = XCTestExpectation(description: "Automatic retry mechanism test - shouldRetry: \(shouldRetry)")
+		var cancellables = Set<AnyCancellable>()
+		
+		let testURL = URL(string: "https://example.com")
+		let mockResourceName = "test-assets-empty-array"
+		let mockStatusCode = shouldRetry ? 429 : 200
+		let testInjectables = TestInjectables(networkPathStatus: .satisfied, mockStatusCode: mockStatusCode, mockResourceName: mockResourceName)
+		
+		guard let mockSession = testInjectables.dataFetcher as? TestInjectables.MockURLSession else {
+			XCTFail("There is something wrong with the test itself")
+			return
+		}
+		XCTAssertEqual(mockSession.callCount, 0) // Should start off never called
+		
+		let testRetryAttempts = 3
+		
+		let mockDataPublisher = NetworkService.shared.fetchDataPublisher(from: testURL, retryAttempts: testRetryAttempts, injectables: testInjectables)
+		mockDataPublisher.sink(
+			receiveCompletion: { _ in
+				expectation.fulfill()
+			},
+			receiveValue: { _ in
+				if shouldRetry {
+					XCTAssertEqual(mockSession.callCount, testRetryAttempts)
+				} else {
+					XCTAssertEqual(mockSession.callCount, 1)
+				}
+				expectation.fulfill()
+			}
+		)
+		.store(in: &cancellables)
+		
+		wait(for: [expectation], timeout: 1) // testRequestRetryMechanism(): Asynchronous wait failed: Exceeded timeout of 3 seconds, with unfulfilled expectations: "Fetch and parse exchange rate".
 	}
 }

@@ -8,13 +8,14 @@
 import Testing
 import Foundation
 import Network
+import Combine
 @testable import WB_Test_Template
 
 struct WB_Test_Template_NetworkServiceTests {
 	
 	// MARK: - Test network issue handling
 	
-	@Test func testNetworkErrors() async {
+	@Test func testNetworkOffline() async {
 		await #expect(throws: NetworkError.invalidURL) { try await NetworkService.shared.fetchData(from: nil) }
 		
 		let testURL = URL(string: "https://example.com")
@@ -23,12 +24,68 @@ struct WB_Test_Template_NetworkServiceTests {
 		await #expect(throws: NetworkError.offline) { try await NetworkService.shared.fetchData(from: testURL, injectables: TestInjectables(networkPathStatus: .none, mockStatusCode: anyStatusCode, mockResourceName: mockResourceName)) }
 		await #expect(throws: NetworkError.offline) { try await NetworkService.shared.fetchData(from: testURL, injectables: TestInjectables(networkPathStatus: .requiresConnection, mockStatusCode: anyStatusCode, mockResourceName: mockResourceName)) }
 		await #expect(throws: NetworkError.offline) { try await NetworkService.shared.fetchData(from: testURL, injectables: TestInjectables(networkPathStatus: .unsatisfied, mockStatusCode: anyStatusCode, mockResourceName: mockResourceName)) }
-		
-		Issue.record("TODO: Remaining NetworkError cases, also add more network error values to match API docs")
 	}
-
-	@Test func testRequestRetryMechanism() {
-		Issue.record("TODO: Test the retry mechanism under failure conditions.")
+	
+	@Test func testNetworkErrors_invalidURL() async {
+		let invalidURL: URL? = nil
+		let mockResourceName = "any name"
+		let anyStatusCode = 200
+		await #expect(throws: NetworkError.invalidURL) { try await NetworkService.shared.fetchData(from: invalidURL, injectables: TestInjectables(networkPathStatus: .satisfied, mockStatusCode: anyStatusCode, mockResourceName: mockResourceName)) }
+	}
+	
+	@Test func testNetworkErrors_noData() async {
+		let testURL = URL(string: "https://example.com")
+		let mockResourceName = "any name"
+		let httpOK = 200
+		await #expect {
+			try await NetworkService.shared.fetchData(from: testURL, injectables: TestInjectables(networkPathStatus: .satisfied, mockStatusCode: httpOK, mockResourceName: mockResourceName))
+		} throws: { error in
+			guard let networkError = error as? NetworkError else {
+				return false
+			}
+			switch networkError {
+			case .serverError(let recognisedServerError, _):
+				return recognisedServerError == .noData
+			default:
+				return false
+			}
+		}
+	}
+	
+	@Test("Test server errors", arguments: [400, 401, 403, 429, 550])
+	func testServerErrors(_ statusCode: Int) async {
+		let testURL = URL(string: "https://example.com")
+		let mockResourceName = "test-assets-empty-array"
+		await #expect {
+			try await NetworkService.shared.fetchData(from: testURL, injectables: TestInjectables(networkPathStatus: .satisfied, mockStatusCode: statusCode, mockResourceName: mockResourceName))
+		} throws: { error in
+			guard let networkError = error as? NetworkError else {
+				return false
+			}
+			switch networkError {
+			case .serverError(let recognisedServerError, _):
+				switch recognisedServerError! {
+				case .badRequest: return statusCode == 400
+				case .unauthorized: return statusCode == 401
+				case .forbidden: return statusCode == 403
+				case .tooManyRequests: return statusCode == 429
+				case .noData: return statusCode == 550
+				}
+			default:
+				return false
+			}
+		}
+	}
+	
+	@Test func testFetch_success() async {
+		let testURL = URL(string: "https://example.com")
+		let mockResourceName = "test-assets-empty-array"
+		let mockStatusCode = 200
+		guard let mockData = try? await NetworkService.shared.fetchData(from: testURL, injectables: TestInjectables(networkPathStatus: .satisfied, mockStatusCode: mockStatusCode, mockResourceName: mockResourceName)) else {
+			Issue.record("Failed to load mock data from file")
+			return
+		}
+		#expect(mockData.isEmpty == false)
 	}
 	
 	@Test func testBuildRequest() {
@@ -39,76 +96,21 @@ struct WB_Test_Template_NetworkServiceTests {
 		#expect( value?.isEmpty == false )
 	}
 
-	// MARK: - Test "assets"
+	// MARK: - Test url generation
 	
 	@Test func testAssetsURL() {
 		#expect( NetworkService.shared.assetsURL() != nil )
 	}
-
-	@Test func testFetchAssets_success() {
-		Issue.record("TODO: Simulate successful fetch and validate the result.")
-	}
-
-	@Test func testFetchAssets_noData() {
-		Issue.record("TODO: Simulate no data returned and validate the error.")
-	}
-
-	@Test func testFetchAssets_serverError() {
-		Issue.record("TODO: Simulate server error response and validate the error.")
-	}
-	
-	// MARK: - Test "asset by ID"
 	
 	@Test func testAssetByIDURL() {
 		#expect( NetworkService.shared.assetURL(id: "generic_example") != nil )
 	}
 
-	@Test func testFetchAssetByID_success() {
-		Issue.record("TODO: Simulate successful fetch of an asset by ID and validate the result.")
-	}
-
-	@Test func testFetchAssetByID_noData() {
-		Issue.record("TODO: Simulate no data returned for GetAssetByID and validate the error.")
-	}
-
-	@Test func testFetchAssetByID_serverError() {
-		Issue.record("TODO: Simulate server error for GetAssetByID and validate the error.")
-	}
-	
-	// MARK: - Test "asset icons"
-	
 	@Test func testAssetIconsURL() {
 		#expect( NetworkService.shared.assetIconsURL(iconSize: 123) != nil )
 	}
 
-	@Test func testFetchAssetIcons_success() {
-		Issue.record("TODO: Simulate successful fetch of asset icons and validate the result.")
-	}
-
-	@Test func testFetchAssetIcons_noData() {
-		Issue.record("TODO: Simulate no data returned for GetAssetIcons and validate the error.")
-	}
-
-	@Test func testFetchAssetIcons_serverError() {
-		Issue.record("TODO: Simulate server error for GetAssetIcons and validate the error.")
-	}
-	
-	// MARK: - Test "exchange rate"
-	
 	@Test func testExchangeRateURL() {
 		#expect( NetworkService.shared.assetIconsURL(iconSize: 123) != nil )
 	}
-
-	@Test func testFetchExchangeRate_success() {
-		Issue.record("TODO: Simulate successful fetch of exchange rate and validate the result.")
-	}
-
-	@Test func testFetchExchangeRate_noData() {
-		Issue.record("TODO: Simulate no data returned for GetExchangeRate and validate the error.")
-	}
-
-	@Test func testFetchExchangeRate_serverError() {
-		Issue.record("TODO: Simulate server error for GetExchangeRate and validate the error.")
-	}
-
 }
