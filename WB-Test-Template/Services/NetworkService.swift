@@ -1,5 +1,6 @@
 import Foundation
 import Network
+import Combine
 
 class NetworkService {
 	static let shared = NetworkService()
@@ -31,11 +32,38 @@ class NetworkService {
 		return DefaultInjectables()
 	}()
 	
-	func fetchData(from url: URL?, injectables: Injectables = injectables) async throws -> Data {
+	func fetchDataPublisher(from url: URL?, retryAttempts: Int, injectables: Injectables = injectables) -> AnyPublisher<Data, Error> {
+		Future { [weak self] promise in
+			Task {
+				guard let self else {
+					// If weak `self` has been deallocated, fail the Future with a `CancellationError`. As NetworkService is a singleton (at the time I write this comment) this can only happen on app shutdown, but being defensive about this means that if I re-write this as not a singleton later (which I've been considering, so it's not premature optimisation to account for that here), this is one less thing to get wrong
+					promise(.failure(CancellationError()))
+					return
+				}
+				do {
+					let data = try await self.fetchData(from: url, injectables: injectables)
+					promise(.success(data))
+				} catch {
+					promise(.failure(error))
+				}
+			}
+		}
+		.retry(retryAttempts) // Note: out of scope for task documentation, but this should really be more more complex: a 401 should never retry (unauthorized), and a 429 (too many requests) must *delay* retries. See e.g. https://www.donnywals.com/retrying-a-network-request-with-a-delay-in-combine/ for possible approaches.
+		.eraseToAnyPublisher()
+	}
+	
+	// Note: out of scope for task documentation, but if this was a real project, I would argue that `NetworkService` should become a separate module, as `func fetchData` shouldn't be directly accessible from the app, but needs to be internal so it can be tested
+	internal func fetchData(from url: URL?, injectables: Injectables = injectables) async throws -> Data {
 		guard let url else {
 			throw NetworkError.invalidURL
 		}
 		
+		// injectables.networkPathStatus may be nil if this is the first call and it's not completed startup yet
+		if injectables.networkPathStatus == nil {
+			// I would use `try await Task.sleep(for: .seconds(2))` but the project minimum deployment says iOS 15 and .seconds was introduced in 16
+			try await Task.sleep(nanoseconds: UInt64(2 * 1_000_000_000))
+		}
+		// no point continuing to wait: if it is still nil, that's likely an error that the user should care about
 		guard injectables.networkPathStatus == .satisfied else {
 			throw NetworkError.offline
 		}
@@ -75,8 +103,8 @@ extension NetworkService {
 		URL(string: "\(injectables.baseURL)/assets")
 	}
 	
-	func fetchAssetsData() async throws -> Data {
-        try await fetchData(from: assetsURL())
+	func fetchAssetsData() -> AnyPublisher<Data, Error> {
+		fetchDataPublisher(from: assetsURL(), retryAttempts: 3)
     }
 }
 
@@ -87,8 +115,8 @@ extension NetworkService {
 		URL(string: "\(injectables.baseURL)/assets/\(id)")
 	}
 	
-	func fetchAssetData(id: String) async throws -> Data {
-		try await fetchData(from: assetURL(id: id))
+	func fetchAssetData(id: String) -> AnyPublisher<Data, Error> {
+		fetchDataPublisher(from: assetURL(id: id), retryAttempts: 3)
 	}
 }
 
@@ -99,8 +127,8 @@ extension NetworkService {
 		URL(string: "\(injectables.baseURL)/assets/icons/\(iconSize)")
 	}
 	
-	func fetchAssetIconsData(iconSize: Int32) async throws -> Data {
-		try await fetchData(from: assetIconsURL(iconSize: iconSize))
+	func fetchAssetIconsData(iconSize: Int32) -> AnyPublisher<Data, Error> {
+		fetchDataPublisher(from: assetIconsURL(iconSize: iconSize), retryAttempts: 3)
 	}
 }
 
@@ -111,7 +139,7 @@ extension NetworkService {
 		URL(string: "\(injectables.baseURL)/exchangerate/\(assetIdBase)/\(assetIdQuote)")
 	}
 	
-	func fetchExchangeRateData(assetIdBase: String, assetIdQuote: String) async throws -> Data {
-		try await fetchData(from: exchangeRateURL(assetIdBase: assetIdBase, assetIdQuote: assetIdQuote))
+	func fetchExchangeRateData(assetIdBase: String, assetIdQuote: String) -> AnyPublisher<Data, Error> {
+		fetchDataPublisher(from: exchangeRateURL(assetIdBase: assetIdBase, assetIdQuote: assetIdQuote), retryAttempts: 3)
 	}
 }

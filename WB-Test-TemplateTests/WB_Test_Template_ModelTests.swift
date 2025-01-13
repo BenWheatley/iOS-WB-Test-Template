@@ -29,7 +29,6 @@ extension WB_Test_Template_ModelTests {
 		let assets = try? Asset.tryToDecodeArray(from: mockData)
 		#expect( assets != nil )
 		
-		
 		for asset in assets! {
 			if asset.name == nil {
 				print("asset with ID found to have nil name: \(asset.assetId)")
