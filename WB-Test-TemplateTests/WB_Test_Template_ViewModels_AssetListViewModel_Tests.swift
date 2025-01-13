@@ -9,15 +9,7 @@ import Foundation
 import Testing
 @testable import WB_Test_Template
 
-actor WB_Test_Template_ViewModels_AssetListViewModel_Tests {
-	let testBundle: Bundle
-	
-	init() {
-		testBundle = Bundle(for: type(of: self))
-	}
-}
-
-extension WB_Test_Template_ViewModels_AssetListViewModel_Tests {
+struct WB_Test_Template_ViewModels_AssetListViewModel_Tests {
 
 	@MainActor @Test func testAssetFilter() {
 		let sut = AssetListViewModel()
@@ -25,8 +17,7 @@ extension WB_Test_Template_ViewModels_AssetListViewModel_Tests {
 		#expect(sut.filteredAssets.count == 0)
 		
 		let mockFileName = "test-asset-id=MST"
-		guard let mockFileURL = testBundle.url(forResource: mockFileName, withExtension: "json"),
-			  let mockData = try? Data(contentsOf: mockFileURL) else {
+		guard let mockData = try? TestBundleLoader.shared.data(forResource: mockFileName, withExtension: "json") else {
 			Issue.record("Failed to load mock data from file")
 			return
 		}

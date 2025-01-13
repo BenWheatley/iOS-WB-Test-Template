@@ -9,6 +9,7 @@ class NetworkService {
 		var apiKey: String { get }
 		var baseURL: String { get }
 		var networkPathStatus: NWPath.Status? { get }
+		var dataFetcher: DataFetcher { get }
 	}
 	
 	// Private inner class: nobody outside this class should ever need to see, or care about, the contents of this. Test-time usage should refer only to `Injectables` protocol for dependency injection.
@@ -16,6 +17,7 @@ class NetworkService {
 		class DefaultInjectables: Injectables {
 			let apiKey = "9A52912A-724F-493D-90A4-8E7066C15B2E"
 			let baseURL = "https://rest.coinapi.io/v1"
+			let dataFetcher: DataFetcher = URLSession.shared
 			
 			// Network status — `Reachability` was the old way, `Network` is the new way:
 			private let networkPathMonitor = NWPathMonitor()
@@ -69,7 +71,7 @@ class NetworkService {
 		}
 		
 		let request = buildRequest(url: url)
-		let (data, response) = try await URLSession.shared.data(for: request)
+		let (data, response) = try await injectables.dataFetcher.data(for: request, delegate: nil) // Have to explicitly provide `delegate: nil`, because I've abstracted up from URLSession to a protocol so I can mock this, but protocols don't allow default arguments (I could also have created a func without that argument at all, passed through to that, but that would then need additional tests and so it doesn't help keep this simple)
 		
 		guard let httpResponse = response as? HTTPURLResponse else {
 			// If we get here, there's an error in the Apple API docs, which claim that "Whenever you make HTTP URL load requests, any response objects you get back from the URLSession, NSURLConnection, or NSURLDownload class are instances of the HTTPURLResponse class."
@@ -103,8 +105,8 @@ extension NetworkService {
 		URL(string: "\(injectables.baseURL)/assets")
 	}
 	
-	func fetchAssetsData() -> AnyPublisher<Data, Error> {
-		fetchDataPublisher(from: assetsURL(), retryAttempts: 3)
+	func fetchAssetsData(injectables: Injectables = injectables) -> AnyPublisher<Data, Error> {
+		fetchDataPublisher(from: assetsURL(injectables: injectables), retryAttempts: 3, injectables: injectables)
     }
 }
 
@@ -115,8 +117,8 @@ extension NetworkService {
 		URL(string: "\(injectables.baseURL)/assets/\(id)")
 	}
 	
-	func fetchAssetData(id: String) -> AnyPublisher<Data, Error> {
-		fetchDataPublisher(from: assetURL(id: id), retryAttempts: 3)
+	func fetchAssetData(id: String, injectables: Injectables = injectables) -> AnyPublisher<Data, Error> {
+		fetchDataPublisher(from: assetURL(id: id, injectables: injectables), retryAttempts: 3, injectables: injectables)
 	}
 }
 
@@ -127,8 +129,8 @@ extension NetworkService {
 		URL(string: "\(injectables.baseURL)/assets/icons/\(iconSize)")
 	}
 	
-	func fetchAssetIconsData(iconSize: Int32) -> AnyPublisher<Data, Error> {
-		fetchDataPublisher(from: assetIconsURL(iconSize: iconSize), retryAttempts: 3)
+	func fetchAssetIconsData(iconSize: Int32, injectables: Injectables = injectables) -> AnyPublisher<Data, Error> {
+		fetchDataPublisher(from: assetIconsURL(iconSize: iconSize, injectables: injectables), retryAttempts: 3, injectables: injectables)
 	}
 }
 
@@ -139,7 +141,7 @@ extension NetworkService {
 		URL(string: "\(injectables.baseURL)/exchangerate/\(assetIdBase)/\(assetIdQuote)")
 	}
 	
-	func fetchExchangeRateData(assetIdBase: String, assetIdQuote: String) -> AnyPublisher<Data, Error> {
-		fetchDataPublisher(from: exchangeRateURL(assetIdBase: assetIdBase, assetIdQuote: assetIdQuote), retryAttempts: 3)
+	func fetchExchangeRateData(assetIdBase: String, assetIdQuote: String, injectables: Injectables = injectables) -> AnyPublisher<Data, Error> {
+		fetchDataPublisher(from: exchangeRateURL(assetIdBase: assetIdBase, assetIdQuote: assetIdQuote, injectables: injectables), retryAttempts: 3, injectables: injectables)
 	}
 }

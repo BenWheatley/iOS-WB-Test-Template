@@ -12,21 +12,17 @@ import Network
 
 struct WB_Test_Template_NetworkServiceTests {
 	
-	struct TestInjectables: NetworkService.Injectables {
-		let apiKey = "9A52912A-724F-493D-90A4-8E7066C15B2E"
-		let baseURL = "https://rest.coinapi.io/v1"
-		var networkPathStatus: NWPath.Status?
-	}
-	
 	// MARK: - Test network issue handling
 	
 	@Test func testNetworkErrors() async {
 		await #expect(throws: NetworkError.invalidURL) { try await NetworkService.shared.fetchData(from: nil) }
 		
 		let testURL = URL(string: "https://example.com")
-		await #expect(throws: NetworkError.offline) { try await NetworkService.shared.fetchData(from: testURL, injectables: TestInjectables(networkPathStatus: .none)) }
-		await #expect(throws: NetworkError.offline) { try await NetworkService.shared.fetchData(from: testURL, injectables: TestInjectables(networkPathStatus: .requiresConnection)) }
-		await #expect(throws: NetworkError.offline) { try await NetworkService.shared.fetchData(from: testURL, injectables: TestInjectables(networkPathStatus: .unsatisfied)) }
+		let mockResourceName = "any name"
+		let anyStatusCode = 300
+		await #expect(throws: NetworkError.offline) { try await NetworkService.shared.fetchData(from: testURL, injectables: TestInjectables(networkPathStatus: .none, mockStatusCode: anyStatusCode, mockResourceName: mockResourceName)) }
+		await #expect(throws: NetworkError.offline) { try await NetworkService.shared.fetchData(from: testURL, injectables: TestInjectables(networkPathStatus: .requiresConnection, mockStatusCode: anyStatusCode, mockResourceName: mockResourceName)) }
+		await #expect(throws: NetworkError.offline) { try await NetworkService.shared.fetchData(from: testURL, injectables: TestInjectables(networkPathStatus: .unsatisfied, mockStatusCode: anyStatusCode, mockResourceName: mockResourceName)) }
 		
 		Issue.record("TODO: Remaining NetworkError cases, also add more network error values to match API docs")
 	}

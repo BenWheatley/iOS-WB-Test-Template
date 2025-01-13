@@ -9,19 +9,10 @@ import Testing
 import Foundation
 @testable import WB_Test_Template
 
-actor WB_Test_Template_ModelTests {
-	let testBundle: Bundle
-	
-	init() {
-		testBundle = Bundle(for: type(of: self))
-	}
-}
-
 // MARK: - Test "assets"
-extension WB_Test_Template_ModelTests {
+struct WB_Test_Template_ModelTests {
 	@Test func testDecodeAssets_success() {
-		guard let mockFileURL = testBundle.url(forResource: "test-assets", withExtension: "json"),
-			  let mockData = try? Data(contentsOf: mockFileURL) else {
+		guard let mockData = try? TestBundleLoader.shared.data(forResource: "test-assets", withExtension: "json") else {
 			Issue.record("Failed to load mock data from file")
 			return
 		}
@@ -37,8 +28,7 @@ extension WB_Test_Template_ModelTests {
 	}
 	
 	@Test func testDecodeAssets_failure() {
-		guard let mockFileURL = testBundle.url(forResource: "test-fail", withExtension: "json"),
-			  let mockData = try? Data(contentsOf: mockFileURL) else {
+		guard let mockData = try? TestBundleLoader.shared.data(forResource: "test-fail", withExtension: "json") else {
 			Issue.record("Failed to load mock data from file")
 			return
 		}
@@ -53,8 +43,7 @@ extension WB_Test_Template_ModelTests {
 	@Test("Test loading of various example assets", arguments: ["EOSISH", "MST", "METADOGEV2", "REBUS", "RLUSD"])
 	func testDecodeAssetByID_success(expectedAssetID: String) {
 		let mockFileName = "test-asset-id=\(expectedAssetID)"
-		guard let mockFileURL = testBundle.url(forResource: mockFileName, withExtension: "json"),
-			  let mockData = try? Data(contentsOf: mockFileURL) else {
+		guard let mockData = try? TestBundleLoader.shared.data(forResource: mockFileName, withExtension: "json") else {
 			Issue.record("Failed to load mock data from file")
 			return
 		}
@@ -71,8 +60,7 @@ extension WB_Test_Template_ModelTests {
 	}
 	
 	@Test func testDecodeAssetByID_failure() {
-		guard let mockFileURL = testBundle.url(forResource: "test-fail", withExtension: "json"),
-			  let mockData = try? Data(contentsOf: mockFileURL) else {
+		guard let mockData = try? TestBundleLoader.shared.data(forResource: "test-fail", withExtension: "json") else {
 			Issue.record("Failed to load mock data from file")
 			return
 		}
@@ -85,8 +73,7 @@ extension WB_Test_Template_ModelTests {
 // MARK: - Test "asset icons"
 extension WB_Test_Template_ModelTests {
 	@Test func testDecodeAssetIcons_success() {
-		guard let mockFileURL = testBundle.url(forResource: "test-asset-icons=64", withExtension: "json"),
-			  let mockData = try? Data(contentsOf: mockFileURL) else {
+		guard let mockData = try? TestBundleLoader.shared.data(forResource: "test-asset-icons=64", withExtension: "json") else {
 			Issue.record("Failed to load mock data from file")
 			return
 		}
@@ -108,8 +95,7 @@ extension WB_Test_Template_ModelTests {
 	}
 	
 	@Test func testDecodeAssetIcons_failure() {
-		guard let mockFileURL = testBundle.url(forResource: "test-fail", withExtension: "json"),
-			  let mockData = try? Data(contentsOf: mockFileURL) else {
+		guard let mockData = try? TestBundleLoader.shared.data(forResource: "test-fail", withExtension: "json") else {
 			Issue.record("Failed to load mock data from file")
 			return
 		}
@@ -122,8 +108,7 @@ extension WB_Test_Template_ModelTests {
 // MARK: - Test "exchange rate"
 extension WB_Test_Template_ModelTests {
 	@Test func testDecodeExchangeRate_success() {
-		guard let mockFileURL = testBundle.url(forResource: "test-asset-exchangerate=BTC-USD", withExtension: "json"),
-			  let mockData = try? Data(contentsOf: mockFileURL) else {
+		guard let mockData = try? TestBundleLoader.shared.data(forResource: "test-asset-exchangerate=BTC-USD", withExtension: "json") else {
 			Issue.record("Failed to load mock data from file")
 			return
 		}
@@ -142,8 +127,7 @@ extension WB_Test_Template_ModelTests {
 	}
 	
 	@Test func testDecodeExchangeRate_failure() {
-		guard let mockFileURL = testBundle.url(forResource: "test-fail", withExtension: "json"),
-			  let mockData = try? Data(contentsOf: mockFileURL) else {
+		guard let mockData = try? TestBundleLoader.shared.data(forResource: "test-fail", withExtension: "json") else {
 			Issue.record("Failed to load mock data from file")
 			return
 		}
