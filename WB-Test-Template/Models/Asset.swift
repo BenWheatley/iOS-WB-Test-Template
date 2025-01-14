@@ -1,5 +1,6 @@
 import Foundation
 
+// Would recommend to import SwiftData then prefix with @Model, but the project settings are for iOS 15 and @Model is iOS 17+
 struct Asset: Codable, Identifiable {
     let id = UUID()
     let assetId: String // API docs claim this can be nil: not actually observed, seems suspicious that it could be in practice
@@ -15,7 +16,7 @@ struct Asset: Codable, Identifiable {
     let volume1HrsUsd: Double?
     let volume1DayUsd: Double?
     let volume1MthUsd: Double?
-    let priceUsd: Double?
+	let priceUsd: Double? // Note: `Double` is as-specified by API docs, but `Double` is famously a bad choice for anything involving money due to how 1/10th is recurring fraction in base-2. API docs: https://docs.coinapi.io/market-data/rest-api/metadata/list-all-assets
     var isFavorite: Bool = false
     
     // Local properties
