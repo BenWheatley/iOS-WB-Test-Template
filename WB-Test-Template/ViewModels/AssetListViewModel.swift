@@ -3,8 +3,6 @@ import Combine
 
 @MainActor
 class AssetListViewModel: ObservableObject {
-	var networkCancellables = Set<AnyCancellable>()
-	
 	@Published var assets: [Asset] = [] {
 		didSet {
 			applyFilters() // If `assets` value changes, the derived value of `filteredAssets` should be updated due to new data (filter and favourites are private, already do this side-effect via functions) TODO: this isn't idiomatic reactive, there's a better way to do it with modern Swift
@@ -16,6 +14,8 @@ class AssetListViewModel: ObservableObject {
     
     private var showFavoritesOnly = false
     private var searchText = ""
+	
+	private var networkCancellables = Set<AnyCancellable>()
     
     func loadAssets() async {
         isLoading = true
