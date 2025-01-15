@@ -16,10 +16,13 @@ struct AssetListView: View {
                     }
                 }
             }
-            .searchable(text: $searchText)
+			.searchable(text: $searchText)
             .onChange(of: searchText) { _ in
                 viewModel.filterAssets(searchText: searchText)
             }
+			.refreshable {
+				await viewModel.loadAssets(context: viewContext)
+			}
             .navigationTitle("Crypto Monitor")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
