@@ -1,11 +1,13 @@
 import SwiftUI
 
 struct AssetListView: View {
-    @StateObject private var viewModel = AssetListViewModel()
+	@Environment(\.managedObjectContext) private var viewContext
+	
+	@StateObject private var viewModel = AssetListViewModel()
     @State private var searchText = ""
     @State private var showFavoritesOnly = false
-    
-    var body: some View {
+	
+	var body: some View {
         NavigationView {
             List {
                 ForEach(viewModel.filteredAssets) { asset in
@@ -31,7 +33,7 @@ struct AssetListView: View {
             }
         }
         .task {
-            await viewModel.loadAssets()
+			await viewModel.loadAssets(context: viewContext)
         }
     }
 }

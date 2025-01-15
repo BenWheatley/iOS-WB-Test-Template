@@ -2,7 +2,7 @@ import Foundation
 
 // Would recommend to import SwiftData then prefix with @Model, but the project settings are for iOS 15 and @Model is iOS 17+
 struct Asset: Codable, Identifiable {
-    let id = UUID()
+    let id = UUID() // Not part of the API, this is only used internally
     let assetId: String // API docs claim this can be nil: not actually observed, seems suspicious that it could be in practice
     let name: String? // Observed: can be nil, see test data for "RLUSD"
     let typeIsCrypto: Int32
@@ -48,4 +48,33 @@ extension Asset: AutoDecoder {
 		formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSX" // Matches the date format in the JSON
 		return .formatted(formatter)
 	}()
+}
+
+extension Asset {
+	init?(from coreDataEntity: AssetEntity) {
+		if let assetId = coreDataEntity.assetId {
+			self.assetId = assetId
+		} else {
+			// API docs claim this can be nil: not actually observed in any responses I've seen, I think the app wouldn't function if this happens in practice, so fail this particular init
+			debugPrint("CoreData's AssetEntity is missing assetId: \(coreDataEntity) - skipping, worth checking how this happened because (despite being optional in API docs) I don't see how this would make sense for the data schema")
+			return nil
+		}
+		name = coreDataEntity.name
+		typeIsCrypto = coreDataEntity.typeIsCrypto
+		dataQuoteStart = coreDataEntity.dataQuoteStart
+		dataQuoteEnd = coreDataEntity.dataQuoteEnd
+		dataOrderbookStart = coreDataEntity.dataOrderbookStart
+		dataOrderbookEnd = coreDataEntity.dataOrderbookEnd
+		dataTradeStart = coreDataEntity.dataTradeStart
+		dataTradeEnd = coreDataEntity.dataTradeEnd
+		
+		// This weirdness because the "optional" flag in CoreData isn't enough, it has to *not* "Use Scalar Type":
+		dataSymbolsCount = coreDataEntity.dataSymbolsCount?.int64Value
+		volume1HrsUsd = coreDataEntity.volume1HrsUsd?.doubleValue
+		volume1DayUsd = coreDataEntity.volume1DayUsd?.doubleValue
+		volume1MthUsd = coreDataEntity.volume1MthUsd?.doubleValue
+		priceUsd = coreDataEntity.priceUsd?.doubleValue
+		
+		isFavorite = coreDataEntity.isFavorite
+	}
 }

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23605" systemVersion="24C101" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+    <entity name="AssetEntity" representedClassName="AssetEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="assetId" attributeType="String"/>
+        <attribute name="dataOrderbookEnd" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="dataOrderbookStart" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="dataQuoteEnd" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="dataQuoteStart" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="dataSymbolsCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="NO"/>
+        <attribute name="dataTradeEnd" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="dataTradeStart" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="isFavorite" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="priceUsd" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO"/>
+        <attribute name="typeIsCrypto" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="volume1DayUsd" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO"/>
+        <attribute name="volume1HrsUsd" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO"/>
+        <attribute name="volume1MthUsd" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO"/>
+    </entity>
+</model>

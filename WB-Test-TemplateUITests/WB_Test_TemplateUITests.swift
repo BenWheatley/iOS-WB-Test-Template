@@ -9,6 +9,13 @@ import XCTest
 
 final class WB_Test_TemplateUITests: XCTestCase {
 
+	/* TODO: list critical user flows, then implement tests for them
+	 
+	 - Does cached data re-load when offline? (Prerequisite: already has already downloaded data)
+	 - ???
+	 
+	 */
+	
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
 
