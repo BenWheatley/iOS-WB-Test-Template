@@ -2,6 +2,7 @@
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23605" systemVersion="24C101" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
     <entity name="AssetEntity" representedClassName="AssetEntity" syncable="YES" codeGenerationType="class">
         <attribute name="assetId" attributeType="String"/>
+        <attribute name="cacheLastUpdated" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="dataOrderbookEnd" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="dataOrderbookStart" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="dataQuoteEnd" optional="YES" attributeType="Date" usesScalarValueType="NO"/>

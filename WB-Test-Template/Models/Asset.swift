@@ -2,7 +2,7 @@ import Foundation
 
 // Would recommend to import SwiftData then prefix with @Model, but the project settings are for iOS 15 and @Model is iOS 17+
 struct Asset: Codable, Identifiable {
-    let id = UUID() // Not part of the API, this is only used internally
+    let id = UUID() // Not part of the API, this is only used internally by SwiftUI for ForEach compliance
     let assetId: String // API docs claim this can be nil: not actually observed, seems suspicious that it could be in practice
     let name: String? // Observed: can be nil, see test data for "RLUSD"
     let typeIsCrypto: Int32
@@ -17,7 +17,11 @@ struct Asset: Codable, Identifiable {
     let volume1DayUsd: Double?
     let volume1MthUsd: Double?
 	let priceUsd: Double? // Note: `Double` is as-specified by API docs, but `Double` is famously a bad choice for anything involving money due to how 1/10th is recurring fraction in base-2. API docs: https://docs.coinapi.io/market-data/rest-api/metadata/list-all-assets
-    var isFavorite: Bool = false
+	
+	/// Set by UI, not by API
+	var isFavorite: Bool = false
+	/// Cache timestamp. Set when loaded from CoreData, not set by API
+	var lastFetched: Date? = nil
     
     // Local properties
     var iconUrl: String {
@@ -76,5 +80,6 @@ extension Asset {
 		priceUsd = coreDataEntity.priceUsd?.doubleValue
 		
 		isFavorite = coreDataEntity.isFavorite
+		lastFetched = coreDataEntity.cacheLastUpdated
 	}
 }

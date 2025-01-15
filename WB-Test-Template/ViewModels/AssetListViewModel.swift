@@ -146,6 +146,8 @@ extension AssetListViewModel {
 				managedObject.priceUsd = asset.priceUsd.map(NSNumber.init(value:)) ?? nil
 				
 				managedObject.isFavorite = asset.isFavorite
+				
+				managedObject.cacheLastUpdated = asset.lastFetched ?? .now
 			}
 			
 			do {
