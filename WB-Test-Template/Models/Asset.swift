@@ -18,12 +18,18 @@ struct Asset: Codable, Identifiable {
     let volume1MthUsd: Double?
 	let priceUsd: Double? // Note: `Double` is as-specified by API docs, but `Double` is famously a bad choice for anything involving money due to how 1/10th is recurring fraction in base-2. API docs: https://docs.coinapi.io/market-data/rest-api/metadata/list-all-assets
 	
+	// Note: If we're treating Asset as a DTO rather than a Model, it makes sense to delete `isFavorite` and `lastFetched` from here and use CoreData as the source of truth. But that's out-of-scope from the task document.
 	/// Set by UI, not by API
 	var isFavorite: Bool = false
 	/// Cache timestamp. Set when loaded from CoreData, not set by API
 	var lastFetched: Date? = nil
     
-    // Local properties
+	// Local properties
+	/** Note: The task document does not actually ask me to connect this value to anything from the API, but also this property has no business being here:
+	 - the network request gets all `AssetIcon`s for a specific icon size, and
+	 - that call can happen independently from the API call to fetch `Asset`s, and
+	 - CoreData can efficiently store, map, lookup an iconURL from an assetId
+	 */
     var iconUrl: String {
         "https://s3.eu-central-1.amazonaws.com/bbxt-static-icons/type-id/png_16/4958c92dbddd4936b1f655e5063dc782.png"
     }
