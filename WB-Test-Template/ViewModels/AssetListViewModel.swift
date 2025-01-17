@@ -12,6 +12,7 @@ class AssetListViewModel: ObservableObject {
     @Published private(set) var filteredAssets: [Asset] = [] // Changed to private(set) so that there's no danger of this property being mutated from outside
     @Published var isLoading = false
     @Published var error: String?
+	@Published var offline: Bool = false
     
     private var showFavoritesOnly = false
     private var searchText = ""
@@ -19,7 +20,7 @@ class AssetListViewModel: ObservableObject {
 	private var networkCancellables = Set<AnyCancellable>()
 	
     func loadAssets(context: NSManagedObjectContext) async {
-        isLoading = true
+		isLoading = true
 		
 		// If we have cached data, provide that immediately.
 		let cachedAssets = fetchCachedAssets(from: context)
@@ -34,10 +35,12 @@ class AssetListViewModel: ObservableObject {
 				guard let self else { return }
 				self.isLoading = false
 				if case .failure(let error) = completion { // We don't need a switch, as we only care about the failure case here
+					offline = (error as? NetworkError) == NetworkError.offline
 					self.error = error.localizedDescription
 				}
 			}, receiveValue: { [weak self] data in
 				guard let self else { return }
+				self.offline = false
 				do {
 					self.assets = try Asset.tryToDecodeArray(from: data)
 					self.saveAssetsToCoreData(assets: self.assets, context: context) // It looks like the API would return *everything*? If it doesn't, then this would need to be changed so that it merges diff of new content rather than replacing everything

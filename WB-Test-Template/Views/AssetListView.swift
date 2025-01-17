@@ -25,6 +25,11 @@ struct AssetListView: View {
 			}
             .navigationTitle("Crypto Monitor")
             .toolbar {
+				ToolbarItem(placement: .bottomBar) {
+					if viewModel.offline {
+						Text("Offline")
+					}
+				}
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
                         showFavoritesOnly.toggle()
