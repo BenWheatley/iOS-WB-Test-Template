@@ -68,6 +68,9 @@ class AssetListViewModel: ObservableObject {
 	}
 	
     func loadAssets() async {
+		// potential race condition of this is called twice, so use the (already present, originally added for UI task) `isLoading` flag to also prevent that
+		guard !isLoading else { return }
+		
 		isLoading = true
 		
 		// If we have cached data, provide that immediately.
