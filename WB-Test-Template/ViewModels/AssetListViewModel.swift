@@ -78,17 +78,16 @@ class AssetListViewModel: ObservableObject {
 		
 		// Now attempt to fetch from network. This may fail, or take a long time.
 		NetworkService.shared.fetchAssetsData()
-			.receive(on: DispatchQueue.main)
 			.sink(receiveCompletion: { [weak self] completion in
 				guard let self else { return }
-				self.isLoading = false
+				DispatchQueue.main.sync { self.isLoading = false }
 				if case .failure(let error) = completion { // We don't need a switch, as we only care about the failure case here
 					offline = (error as? NetworkError) == NetworkError.offline
 					self.error = error.localizedDescription
 				}
 			}, receiveValue: { [weak self] data in
 				guard let self else { return }
-				self.offline = false
+				DispatchQueue.main.sync { self.offline = false }
 				do {
 					var decodedAssets = try Asset.tryToDecodeArray(from: data)
 					
@@ -105,7 +104,7 @@ class AssetListViewModel: ObservableObject {
 						decodedAssets[index] = asset
 					}
 					
-					self.assets = decodedAssets
+					DispatchQueue.main.sync { self.assets = decodedAssets }
 					self.saveAssetsToCoreData(assets: self.assets) // It looks like the API would return *everything*? If it doesn't, then this would need to be changed so that it merges diff of new content rather than replacing everything
 				} catch {
 					self.error = error.localizedDescription
@@ -179,7 +178,8 @@ class AssetListViewModel: ObservableObject {
 	}
 	
 	func saveAssetsToCoreData(assets: [Asset]) {
-		context.performAndWait {
+		context.perform { [weak self] in
+			guard let self else { return }
 			/*
 			 Fetch existing, or create new, `managedObject: AssetEntity`
 			 
@@ -198,7 +198,7 @@ class AssetListViewModel: ObservableObject {
 			// 2. Fetch all those assets from CoreData (dictionary for faster lookup)
 			var existingAssets: [String: AssetEntity] = [:]
 			do {
-				let assetArray = try context.fetch(existingAssetsSearch)
+				let assetArray = try self.context.fetch(existingAssetsSearch)
 				for asset in assetArray {
 					// I'm not clear why, but despite the Optional flag being off in the CoreData inspector, this is being treated as if it was optional. Can't figure out how to fix that. If I can, this becomes much simpler.
 					guard let assetId = asset.assetId else {
@@ -217,7 +217,7 @@ class AssetListViewModel: ObservableObject {
 				if let existingAsset = existingAssets[asset.assetId] {
 					managedObject = existingAsset
 				} else {
-					managedObject = AssetEntity(context: context)
+					managedObject = AssetEntity(context: self.context)
 					managedObject.assetId = asset.assetId // If it's new, we need to set the assetId, otherwise we don't.
 				}
 				
