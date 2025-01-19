@@ -23,10 +23,7 @@ class AssetListViewModel: ObservableObject {
 		isLoading = true
 		
 		// If we have cached data, provide that immediately.
-		let cachedAssets = fetchCachedAssets(from: context)
-		if !cachedAssets.isEmpty {
-			self.assets = cachedAssets
-		}
+		reloadCoreData(from: context)
 		
 		// Now attempt to fetch from network. This may fail, or take a long time.
 		NetworkService.shared.fetchAssetsData()
@@ -42,7 +39,22 @@ class AssetListViewModel: ObservableObject {
 				guard let self else { return }
 				self.offline = false
 				do {
-					self.assets = try Asset.tryToDecodeArray(from: data)
+					var decodedAssets = try Asset.tryToDecodeArray(from: data)
+					
+					// New asset values should update existing content, but not delete it: deleting the content will remove isFav and lastCache values:
+					// This would be simpler if the DTO was also the CoreData model
+					
+					let currentAssetsDictionary = Dictionary(uniqueKeysWithValues: self.assets.map { ($0.assetId, $0) }) // For efficiency — if I did this with arrays, it would be O(n^2) most of the time, and n is large enough that I expect this to be noticable
+					
+					// Note: I'm assuming assets never get de-listed — this may be a false assumption, but considerations for this possibility appear to be beyond the scope of the task document
+					for index in decodedAssets.indices {
+						var asset = decodedAssets[index]
+						guard let correspondingAsset = currentAssetsDictionary[asset.assetId] else { continue }
+						asset.performCacheUpdate(using: correspondingAsset)
+						decodedAssets[index] = asset
+					}
+					
+					self.assets = decodedAssets
 					self.saveAssetsToCoreData(assets: self.assets, context: context) // It looks like the API would return *everything*? If it doesn't, then this would need to be changed so that it merges diff of new content rather than replacing everything
 				} catch {
 					self.error = error.localizedDescription
@@ -60,6 +72,24 @@ class AssetListViewModel: ObservableObject {
         showFavoritesOnly = showFavorites
         applyFilters()
     }
+	
+	func toggleFavouriteStatus(for asset: Asset, in context: NSManagedObjectContext) {
+		// This is necessary because `Asset` is a `struct`, so it's being passed around by value not by reference; we could change this to a `class` and then this part becomes `asset.isFavourite.toggle()`
+		guard let index = assets.firstIndex(where: { $0.assetId == asset.assetId }) else {
+			return
+		}
+		
+		// Note: we could instead toggle assetEntity.isFavorite in the if-let below, then reload everything from CoreData. CoreData is fast, but not fast enough for that, and also the UI flow has no considerations for this (and fixing that is out of scope) so it would look worse to no advantage.
+		assets[index].isFavorite.toggle()
+		
+		// Persist the change to Core Data
+		if let assetEntity = fetchAssetEntity(by: asset.assetId, in: context) {
+			assetEntity.isFavorite = assets[index].isFavorite
+			CoreDataStack.shared.save()
+		}
+		
+		applyFilters()
+	}
     
     private func applyFilters() {
         filteredAssets = assets.filter { asset in
@@ -72,11 +102,30 @@ class AssetListViewModel: ObservableObject {
             return matchesSearch && matchesFavorites
         }
     }
-}
-
-// MARK: - CoreData
-
-extension AssetListViewModel {
+	
+	private func reloadCoreData(from context: NSManagedObjectContext) {
+		// Note: The order of results returned by CoreData has no relation to what was provided by the API response, but doing anything about that is outside the scope of the task requirements
+		let cachedAssets = fetchCachedAssets(from: context)
+		if !cachedAssets.isEmpty {
+			self.assets = cachedAssets
+		}
+	}
+	
+	// This could also be inlined as I'm only using it one place, but feels like the kind of thing that I would expect to be re-used when considering architectural-level decisions. The actual task requirements neither require nor implicitly argue against doing it as a separate function.
+	private func fetchAssetEntity(by assetId: String, in context: NSManagedObjectContext) -> AssetEntity? {
+		let fetchRequest: NSFetchRequest<AssetEntity> = AssetEntity.fetchRequest()
+		fetchRequest.predicate = NSPredicate(format: "assetId == %@", assetId)
+		fetchRequest.fetchLimit = 1
+		
+		do {
+			let results = try context.fetch(fetchRequest)
+			return results.first
+		} catch {
+			debugPrint("Error fetching AssetEntity (id=\(assetId)) from CoreData: \(error.localizedDescription)")
+			return nil
+		}
+	}
+	
 	func fetchCachedAssets(from context: NSManagedObjectContext) -> [Asset] {
 		let fetchRequest: NSFetchRequest<AssetEntity> = AssetEntity.fetchRequest()
 		
@@ -153,11 +202,7 @@ extension AssetListViewModel {
 				managedObject.cacheLastUpdated = asset.lastFetched ?? .now
 			}
 			
-			do {
-				try context.save()
-			} catch {
-				print("Failed to save assets to Core Data: \(error.localizedDescription)")
-			}
+			CoreDataStack.shared.save()
 		}
 	}
 }

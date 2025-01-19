@@ -11,8 +11,14 @@ struct AssetListView: View {
         NavigationView {
             List {
                 ForEach(viewModel.filteredAssets) { asset in
-                    NavigationLink(destination: AssetDetailView(asset: asset)) {
-                        AssetRowView(asset: asset)
+                    NavigationLink(
+						destination:
+							AssetDetailView(
+								asset: asset,
+								favouriteToggleAction: { viewModel.toggleFavouriteStatus(for: asset, in: viewContext) }
+							)
+					) {
+						AssetRowView(asset: asset)
                     }
                 }
             }
@@ -64,6 +70,9 @@ struct AssetRowView: View {
                 Text(asset.assetId)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
+				Text(asset.lastFetched?.description ?? "Asset was never fetched")
+					.font(.footnote)
+					.foregroundColor(.secondary)
             }
             
             Spacer()

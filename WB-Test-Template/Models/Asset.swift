@@ -18,7 +18,7 @@ struct Asset: Codable, Identifiable {
     let volume1MthUsd: Double?
 	let priceUsd: Double? // Note: `Double` is as-specified by API docs, but `Double` is famously a bad choice for anything involving money due to how 1/10th is recurring fraction in base-2. API docs: https://docs.coinapi.io/market-data/rest-api/metadata/list-all-assets
 	
-	// Note: If we're treating Asset as a DTO rather than a Model, it makes sense to delete `isFavorite` and `lastFetched` from here and use CoreData as the source of truth. But that's out-of-scope from the task document.
+	// Note: If we're treating Asset as a DTO rather than a Model, it makes sense to delete `isFavorite` and `lastFetched` from here and use CoreData as the source of truth. But that's out-of-scope from the task document, and also interferes with recommendation to upgrade min iOS version to 17 so we can mark this struct as a @Model
 	/// Set by UI, not by API
 	var isFavorite: Bool = false
 	/// Cache timestamp. Set when loaded from CoreData, not set by API
@@ -87,5 +87,10 @@ extension Asset {
 		
 		isFavorite = coreDataEntity.isFavorite
 		lastFetched = coreDataEntity.cacheLastUpdated
+	}
+	
+	mutating func performCacheUpdate(using other: Asset) {
+		self.isFavorite = other.isFavorite
+		self.lastFetched = .now
 	}
 }
