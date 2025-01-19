@@ -14,16 +14,64 @@ class AssetListViewModel: ObservableObject {
     @Published var error: String?
 	@Published var offline: Bool = false
     
-    private var showFavoritesOnly = false
-    private var searchText = ""
+	@Published var showFavoritesOnly: Bool = false {
+		didSet {
+			applyFilters()
+			saveAppState()
+		}
+	}
+	
+	@Published var searchText: String = "" {
+		didSet {
+			applyFilters()
+			saveAppState()
+		}
+	}
+	
+	let context: NSManagedObjectContext
+	
+	init(context: NSManagedObjectContext) {
+		self.context = context
+	}
 	
 	private var networkCancellables = Set<AnyCancellable>()
 	
-    func loadAssets(context: NSManagedObjectContext) async {
+	/// Used to prevent conflict between save and load of app state; I could also have made this it's own type so that saving and loading are atomic
+	private var supressSaveAppState: Bool = false
+	
+	func fetchAppState() {
+		supressSaveAppState = true
+		let fetchRequest: NSFetchRequest<AppState> = AppState.fetchRequest()
+		fetchRequest.fetchLimit = 1
+		if let appState = try? context.fetch(fetchRequest).first {
+			showFavoritesOnly = appState.showFavoritesOnly
+			searchText = appState.searchText ?? ""
+		}
+		supressSaveAppState = false
+	}
+	
+	func saveAppState() {
+		guard !supressSaveAppState else { return }
+		
+		let fetchRequest: NSFetchRequest<AppState> = AppState.fetchRequest()
+		fetchRequest.fetchLimit = 1
+		let appState = (try? context.fetch(fetchRequest).first) ?? AppState(context: context)
+		
+		appState.searchText = searchText
+		appState.showFavoritesOnly = showFavoritesOnly
+		
+		do {
+			try context.save()
+		} catch {
+			print("Failed to save app state: \(error)")
+		}
+	}
+	
+    func loadAssets() async {
 		isLoading = true
 		
 		// If we have cached data, provide that immediately.
-		reloadCoreData(from: context)
+		reloadCoreData()
 		
 		// Now attempt to fetch from network. This may fail, or take a long time.
 		NetworkService.shared.fetchAssetsData()
@@ -55,7 +103,7 @@ class AssetListViewModel: ObservableObject {
 					}
 					
 					self.assets = decodedAssets
-					self.saveAssetsToCoreData(assets: self.assets, context: context) // It looks like the API would return *everything*? If it doesn't, then this would need to be changed so that it merges diff of new content rather than replacing everything
+					self.saveAssetsToCoreData(assets: self.assets) // It looks like the API would return *everything*? If it doesn't, then this would need to be changed so that it merges diff of new content rather than replacing everything
 				} catch {
 					self.error = error.localizedDescription
 				}
@@ -63,17 +111,7 @@ class AssetListViewModel: ObservableObject {
 			.store(in: &networkCancellables)
     }
     
-    func filterAssets(searchText: String) {
-        self.searchText = searchText
-        applyFilters()
-    }
-    
-    func toggleFavoritesFilter(_ showFavorites: Bool) {
-        showFavoritesOnly = showFavorites
-        applyFilters()
-    }
-	
-	func toggleFavouriteStatus(for asset: Asset, in context: NSManagedObjectContext) {
+    func toggleFavouriteStatus(for asset: Asset) {
 		// This is necessary because `Asset` is a `struct`, so it's being passed around by value not by reference; we could change this to a `class` and then this part becomes `asset.isFavourite.toggle()`
 		guard let index = assets.firstIndex(where: { $0.assetId == asset.assetId }) else {
 			return
@@ -83,7 +121,7 @@ class AssetListViewModel: ObservableObject {
 		assets[index].isFavorite.toggle()
 		
 		// Persist the change to Core Data
-		if let assetEntity = fetchAssetEntity(by: asset.assetId, in: context) {
+		if let assetEntity = fetchAssetEntity(by: asset.assetId) {
 			assetEntity.isFavorite = assets[index].isFavorite
 			CoreDataStack.shared.save()
 		}
@@ -103,16 +141,16 @@ class AssetListViewModel: ObservableObject {
         }
     }
 	
-	private func reloadCoreData(from context: NSManagedObjectContext) {
+	private func reloadCoreData() {
 		// Note: The order of results returned by CoreData has no relation to what was provided by the API response, but doing anything about that is outside the scope of the task requirements
-		let cachedAssets = fetchCachedAssets(from: context)
+		let cachedAssets = fetchCachedAssets()
 		if !cachedAssets.isEmpty {
 			self.assets = cachedAssets
 		}
 	}
 	
 	// This could also be inlined as I'm only using it one place, but feels like the kind of thing that I would expect to be re-used when considering architectural-level decisions. The actual task requirements neither require nor implicitly argue against doing it as a separate function.
-	private func fetchAssetEntity(by assetId: String, in context: NSManagedObjectContext) -> AssetEntity? {
+	private func fetchAssetEntity(by assetId: String) -> AssetEntity? {
 		let fetchRequest: NSFetchRequest<AssetEntity> = AssetEntity.fetchRequest()
 		fetchRequest.predicate = NSPredicate(format: "assetId == %@", assetId)
 		fetchRequest.fetchLimit = 1
@@ -126,7 +164,7 @@ class AssetListViewModel: ObservableObject {
 		}
 	}
 	
-	func fetchCachedAssets(from context: NSManagedObjectContext) -> [Asset] {
+	func fetchCachedAssets() -> [Asset] {
 		let fetchRequest: NSFetchRequest<AssetEntity> = AssetEntity.fetchRequest()
 		
 		do {
@@ -137,7 +175,7 @@ class AssetListViewModel: ObservableObject {
 		}
 	}
 	
-	func saveAssetsToCoreData(assets: [Asset], context: NSManagedObjectContext) {
+	func saveAssetsToCoreData(assets: [Asset]) {
 		context.performAndWait {
 			/*
 			 Fetch existing, or create new, `managedObject: AssetEntity`

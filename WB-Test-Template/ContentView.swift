@@ -8,8 +8,10 @@
 import SwiftUI
 
 struct ContentView: View {
+	@StateObject private var coreDataStack = CoreDataStack.shared
+	
     var body: some View {
-        AssetListView()
+		AssetListView(viewModel: AssetListViewModel(context: coreDataStack.persistentContainer.viewContext))
     }
 }
 

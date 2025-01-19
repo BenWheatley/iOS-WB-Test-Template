@@ -1,12 +1,8 @@
 import SwiftUI
 
 struct AssetListView: View {
-	@Environment(\.managedObjectContext) private var viewContext
-	
-	@StateObject private var viewModel = AssetListViewModel()
-    @State private var searchText = ""
-    @State private var showFavoritesOnly = false
-	
+	@StateObject public var viewModel: AssetListViewModel
+    
 	var body: some View {
         NavigationView {
             List {
@@ -15,19 +11,16 @@ struct AssetListView: View {
 						destination:
 							AssetDetailView(
 								asset: asset,
-								favouriteToggleAction: { viewModel.toggleFavouriteStatus(for: asset, in: viewContext) }
+								favouriteToggleAction: { viewModel.toggleFavouriteStatus(for: asset) }
 							)
 					) {
 						AssetRowView(asset: asset)
                     }
                 }
             }
-			.searchable(text: $searchText)
-            .onChange(of: searchText) { _ in
-                viewModel.filterAssets(searchText: searchText)
-            }
-			.refreshable {
-				await viewModel.loadAssets(context: viewContext)
+			.searchable(text: $viewModel.searchText)
+            .refreshable {
+				await viewModel.loadAssets()
 			}
             .navigationTitle("Crypto Monitor")
             .toolbar {
@@ -38,16 +31,16 @@ struct AssetListView: View {
 				}
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
-                        showFavoritesOnly.toggle()
-                        viewModel.toggleFavoritesFilter(showFavoritesOnly)
+						viewModel.showFavoritesOnly.toggle()
                     }) {
-                        Image(systemName: showFavoritesOnly ? "star.fill" : "star")
+						Image(systemName: viewModel.showFavoritesOnly ? "star.fill" : "star")
                     }
                 }
             }
         }
+		.onAppear { viewModel.fetchAppState() }
         .task {
-			await viewModel.loadAssets(context: viewContext)
+			await viewModel.loadAssets()
         }
     }
 }

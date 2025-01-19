@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23605" systemVersion="24C101" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+    <entity name="AppState" representedClassName="AppState" syncable="YES" codeGenerationType="class">
+        <attribute name="searchText" attributeType="String"/>
+        <attribute name="showFavoritesOnly" attributeType="Boolean" usesScalarValueType="YES"/>
+    </entity>
     <entity name="AssetEntity" representedClassName="AssetEntity" syncable="YES" codeGenerationType="class">
         <attribute name="assetId" attributeType="String"/>
         <attribute name="cacheLastUpdated" attributeType="Date" usesScalarValueType="NO"/>

@@ -13,8 +13,7 @@ struct WB_Test_TemplateApp: App {
 	
     var body: some Scene {
         WindowGroup {
-            AssetListView()
-				.environment(\.managedObjectContext, coreDataStack.persistentContainer.viewContext)
+			AssetListView(viewModel: AssetListViewModel(context: coreDataStack.persistentContainer.viewContext))
         }
     }
 }
