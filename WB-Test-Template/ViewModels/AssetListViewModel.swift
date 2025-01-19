@@ -6,7 +6,7 @@ import CoreData
 class AssetListViewModel: ObservableObject {
 	@Published var assets: [Asset] = [] {
 		didSet {
-			applyFilters() // If `assets` value changes, the derived value of `filteredAssets` should be updated due to new data (filter and favourites are private, already do this side-effect via functions) TODO: this isn't idiomatic reactive, there's a better way to do it with modern Swift
+			applyFilters() // If `assets` value changes, the derived value of `filteredAssets` should be updated due to new data (filter and favourites are private, already do this side-effect via functions)
 		}
 	}
     @Published private(set) var filteredAssets: [Asset] = [] // Changed to private(set) so that there's no danger of this property being mutated from outside

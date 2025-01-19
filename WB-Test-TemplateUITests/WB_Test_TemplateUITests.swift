@@ -11,8 +11,12 @@ final class WB_Test_TemplateUITests: XCTestCase {
 
 	/* TODO: list critical user flows, then implement tests for them
 	 
+	 - View Cryptocurrency List
+	 - View Cryptocurrency Details
+	 - Mark Cryptocurrency as Favorite
+	 - Refresh Cryptocurrency Data
 	 - Does cached data re-load when offline? (Prerequisite: already has already downloaded data)
-	 - ???
+	 - Save and Restore App State
 	 
 	 */
 	
