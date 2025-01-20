@@ -18,6 +18,7 @@ struct AssetListView: View {
                     }
                 }
             }
+			.accessibilityLabel("Asset list") // Note: label, not identifier - this would be the spoken name, not merely an internal ID string
 			.searchable(text: $viewModel.searchText)
             .refreshable {
 				await viewModel.loadAssets()
@@ -75,5 +76,6 @@ struct AssetRowView: View {
                     .foregroundColor(.yellow)
             }
         }
+		.accessibilityIdentifier("AssetRowView_\(asset.assetId)") // Note: identifiers are private ID strings, not user-facing
     }
 }
