@@ -12,7 +12,7 @@ import Testing
 struct WB_Test_Template_ViewModels_AssetListViewModel_Tests {
 
 	@MainActor @Test func testAssetFilter() {
-		let sut = AssetListViewModel()
+		let sut = AssetListViewModel(context: CoreDataStack.shared.persistentContainer.viewContext)
 		sut.assets = []
 		#expect(sut.filteredAssets.count == 0)
 		
@@ -31,27 +31,27 @@ struct WB_Test_Template_ViewModels_AssetListViewModel_Tests {
 		
 		// Test name/ID filtering
 		
-		sut.filterAssets(searchText: "any old nonsense h39iunjsdka")
+		sut.searchText = "any old nonsense h39iunjsdka"
 		#expect(sut.filteredAssets.count == 0)
 		
-		sut.filterAssets(searchText: "MST")
+		sut.searchText = "MST"
 		#expect(sut.filteredAssets.count == 1)
 		
-		sut.filterAssets(searchText: "alternate between zero and non-zero result searches")
+		sut.searchText = "alternate between zero and non-zero result searches"
 		#expect(sut.filteredAssets.count == 0)
 		
-		sut.filterAssets(searchText: "MustangCoin")
+		sut.searchText = "MustangCoin"
 		#expect(sut.filteredAssets.count == 1)
 		
-		sut.filterAssets(searchText: "last search text that should get no results")
+		sut.searchText = "last search text that should get no results"
 		#expect(sut.filteredAssets.count == 0)
 		
-		sut.filterAssets(searchText: "")
+		sut.searchText = ""
 		#expect(sut.filteredAssets.count == 1)
 		
 		// Now test "favourites" filtering
 		
-		sut.toggleFavoritesFilter(true)
+		sut.showFavoritesOnly = true
 		#expect(sut.filteredAssets.count == 0)
 		
 		sut.assets[0].isFavorite = true
