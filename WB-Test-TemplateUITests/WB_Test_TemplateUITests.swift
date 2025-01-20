@@ -9,15 +9,15 @@ import XCTest
 
 final class WB_Test_TemplateUITests: XCTestCase {
 
-	/* TODO: list critical user flows, then implement tests for them
+	/*
+	 Critical flows:
 	 
-	 - View Cryptocurrency List
-	 - View Cryptocurrency Details
-	 - Mark Cryptocurrency as Favorite
-	 - Refresh Cryptocurrency Data
+	 - View currency list
+	 - View specific currency details
+	 - Mark specific currency as favorite, remove specific currency as favourite
+	 - Refresh currency data
 	 - Does cached data re-load when offline? (Prerequisite: already has already downloaded data)
-	 - Save and Restore App State
-	 
+	 - Save and restore app state
 	 */
 	
     override func setUpWithError() throws {
