@@ -94,6 +94,7 @@
 		B5542DFB2D355CAC001B9AC4 /* test-assets-empty-array.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "test-assets-empty-array.json"; sourceTree = "<group>"; };
 		B5542E062D366BC6001B9AC4 /* CoreDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
 		B5542E092D366BE9001B9AC4 /* CoreDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CoreDataModel.xcdatamodel; sourceTree = "<group>"; };
+		B5542E1D2D4057DF001B9AC4 /* WB-Test-Template.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = "WB-Test-Template.xctestplan"; sourceTree = "<group>"; };
 		B5CE11B02D301A5C00F3D0A2 /* WB_Test_Template_NetworkServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WB_Test_Template_NetworkServiceTests.swift; sourceTree = "<group>"; };
 		B5CE11B22D301CB900F3D0A2 /* AutoDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoDecoder.swift; sourceTree = "<group>"; };
 		B5CE11B52D301D0800F3D0A2 /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
@@ -137,6 +138,7 @@
 		84E0D1B72D1AE26C00A55CCB = {
 			isa = PBXGroup;
 			children = (
+				B5542E1D2D4057DF001B9AC4 /* WB-Test-Template.xctestplan */,
 				84E0D1C22D1AE26C00A55CCB /* WB-Test-Template */,
 				84E0D1D62D1AE26E00A55CCB /* WB-Test-TemplateTests */,
 				84E0D1E02D1AE26E00A55CCB /* WB-Test-TemplateUITests */,

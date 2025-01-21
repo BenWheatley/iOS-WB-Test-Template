@@ -46,9 +46,4 @@ extension CoreDataStack {
 			print("Failed to save the context:", error.localizedDescription)
 		}
 	}
-	
-	func delete(item: AssetEntity) {
-		persistentContainer.viewContext.delete(item)
-		save()
-	}
 }

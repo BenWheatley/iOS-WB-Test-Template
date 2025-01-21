@@ -36,6 +36,31 @@ final class WB_Test_TemplateTests: XCTestCase {
 		wait(for: [expectation], timeout: 15)
     }
 	
+	func testIntegratedFetchAndParse_SpecificAsset() {
+		let expectation = XCTestExpectation(description: "Fetch and parse assets")
+		var cancellables = Set<AnyCancellable>()
+		
+		let testInjectables = TestInjectables(networkPathStatus: .satisfied, mockStatusCode: 200, mockResourceName: "test-asset-id=EOSISH")
+		let assetsDataPublisher = NetworkService.shared.fetchAssetData(id: "EOSISH", injectables: testInjectables)
+		assetsDataPublisher.sink( receiveCompletion: { completion in
+			switch completion {
+			case .finished: break
+			case .failure(let error): XCTFail("Could not fetch assets data from mock network: \(error.localizedDescription)")
+			}
+		}, receiveValue: { data in
+			guard let assets = try? Asset.tryToDecodeArray(from: data) else {
+				XCTFail("Could not parse assets data from network")
+				return
+			}
+			XCTAssertEqual(assets.count, 1)
+			expectation.fulfill()
+		})
+		.store(in: &cancellables)
+		
+		wait(for: [expectation], timeout: 15)
+		
+	}
+	
 	func testIntegratedFetchAndParse_AssetsIcons() {
 		let expectation = XCTestExpectation(description: "Fetch and parse icons")
 		var cancellables = Set<AnyCancellable>()
