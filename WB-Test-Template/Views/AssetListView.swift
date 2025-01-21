@@ -36,6 +36,7 @@ struct AssetListView: View {
                     }) {
 						Image(systemName: viewModel.showFavoritesOnly ? "star.fill" : "star")
                     }
+					.accessibilityLabel("favoritesToggleButton") // Minimum needed for UI test; note that this button probably needs more work for actual usability, but that's outside the scope of the design doc
                 }
             }
         }
