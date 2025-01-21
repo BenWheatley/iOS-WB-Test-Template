@@ -10,14 +10,15 @@ import Network
 @testable import WB_Test_Template
 
 struct TestInjectables: NetworkService.Injectables {
-	let apiKey = "9A52912A-724F-493D-90A4-8E7066C15B2E"
+	let apiKey: String
 	let baseURL = "https://rest.coinapi.io/v1"
 	let dataFetcher: DataFetcher
 	var networkPathStatus: NWPath.Status?
 	
-	init(networkPathStatus: NWPath.Status?, mockStatusCode: Int, mockResourceName: String) {
+	init(networkPathStatus: NWPath.Status?, mockStatusCode: Int, mockResourceName: String, apiKey: String = "9A52912A-724F-493D-90A4-8E7066C15B2E") {
 		dataFetcher = MockURLSession(mockStatusCode: mockStatusCode, mockResourceName: mockResourceName)
 		self.networkPathStatus = networkPathStatus
+		self.apiKey = apiKey
 	}
 	
 	class MockURLSession: DataFetcher {

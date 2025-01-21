@@ -90,10 +90,13 @@ struct WB_Test_Template_NetworkServiceTests {
 	
 	@Test func testBuildRequest() {
 		let testURL = URL(string: "https://example.com")!
-		let value = NetworkService.shared.buildRequest(url: testURL).value(forHTTPHeaderField: "X-CoinAPI-Key")
-		// TODO: make the value injectable for equality testing
+		let mockResourceName = "test-assets-empty-array"
+		let mockAPIKey = "some value to test"
+		let injectables = TestInjectables(networkPathStatus: .satisfied, mockStatusCode: 200, mockResourceName: mockResourceName, apiKey: mockAPIKey)
+		let value = NetworkService.shared.buildRequest(url: testURL, injectables: injectables).value(forHTTPHeaderField: "X-CoinAPI-Key")
 		#expect( value != nil )
 		#expect( value?.isEmpty == false )
+		#expect( mockAPIKey == value )
 	}
 
 	// MARK: - Test url generation

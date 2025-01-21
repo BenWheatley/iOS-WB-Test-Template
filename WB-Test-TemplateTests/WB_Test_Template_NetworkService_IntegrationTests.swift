@@ -33,7 +33,7 @@ final class WB_Test_TemplateTests: XCTestCase {
 		})
 		.store(in: &cancellables)
 		
-		wait(for: [expectation], timeout: 3)
+		wait(for: [expectation], timeout: 15)
     }
 	
 	func testIntegratedFetchAndParse_AssetsIcons() {
