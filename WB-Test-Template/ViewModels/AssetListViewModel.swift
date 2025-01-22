@@ -10,7 +10,7 @@ class AssetListViewModel: ObservableObject {
 		}
 	}
     @Published private(set) var filteredAssets: [Asset] = [] // Changed to private(set) so that there's no danger of this property being mutated from outside
-    @Published var isLoading = false
+    private var isLoading = false
     @Published var error: String?
 	@Published var offline: Bool = false
     
@@ -80,10 +80,11 @@ class AssetListViewModel: ObservableObject {
 		NetworkService.shared.fetchAssetsData()
 			.sink(receiveCompletion: { [weak self] completion in
 				guard let self else { return }
-				DispatchQueue.main.sync { self.isLoading = false }
-				if case .failure(let error) = completion { // We don't need a switch, as we only care about the failure case here
-					offline = (error as? NetworkError) == NetworkError.offline
-					self.error = error.localizedDescription
+				DispatchQueue.main.sync { self.isLoading = false
+					if case .failure(let error) = completion { // We don't need a switch, as we only care about the failure case here
+						self.offline = (error as? NetworkError) == NetworkError.offline
+						self.error = error.localizedDescription
+					}
 				}
 			}, receiveValue: { [weak self] data in
 				guard let self else { return }
@@ -107,7 +108,7 @@ class AssetListViewModel: ObservableObject {
 					DispatchQueue.main.sync { self.assets = decodedAssets }
 					self.saveAssetsToCoreData(assets: self.assets) // It looks like the API would return *everything*? If it doesn't, then this would need to be changed so that it merges diff of new content rather than replacing everything
 				} catch {
-					self.error = error.localizedDescription
+					DispatchQueue.main.sync { self.error = error.localizedDescription }
 				}
 			})
 			.store(in: &networkCancellables)
