@@ -2,7 +2,8 @@ import SwiftUI
 
 struct AssetListView: View {
 	@StateObject public var viewModel: AssetListViewModel
-    
+	@State private var selectedAssetId: String?
+	
 	var body: some View {
         NavigationView {
             List {
@@ -12,7 +13,9 @@ struct AssetListView: View {
 							AssetDetailView(
 								asset: asset,
 								favouriteToggleAction: { viewModel.toggleFavouriteStatus(for: asset) }
-							)
+							),
+						tag: asset.assetId, // This is to resolve a race condition; it's arguable if this is "in" AssetListViewModel (as per task document) or not, but it definitely *involves* AssetListViewModel
+						selection: $selectedAssetId
 					) {
 						AssetRowView(asset: asset)
                     }

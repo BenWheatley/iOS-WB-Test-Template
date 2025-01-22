@@ -2,7 +2,8 @@ import Foundation
 
 // Would recommend to import SwiftData then prefix with @Model, but the project settings are for iOS 15 and @Model is iOS 17+
 struct Asset: Codable, Identifiable {
-    let id = UUID() // Not part of the API, this is only used internally by SwiftUI for ForEach compliance
+	var id: String { assetId } // Not part of the API, this is only used internally by SwiftUI for ForEach compliance
+	
     let assetId: String // API docs claim this can be nil: not actually observed, seems suspicious that it could be in practice
     let name: String? // Observed: can be nil, see test data for "RLUSD"
     let typeIsCrypto: Int32

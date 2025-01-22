@@ -88,8 +88,8 @@ final class WB_Test_TemplateUITests: XCTestCase {
 		utility_makeSureFavouritesIsOff()
 		
 		let searchField = utility_getSearchField()
-		let cell = utility_getBitcoinElement(searchField: searchField)
-		let exists = cell.waitForExistence(timeout: 10) // My observation is that it can take 4 seconds to fetch and parse all the data; even though this is already tested, we need to wait so we can tap the cell
+		let cell = utility_getBitcoinElement(searchField: searchField).firstMatch
+		let exists = cell.waitForExistence(timeout: 15) // My observation is that it can take 4 seconds to fetch and parse all the data; even though this is already tested, we need to wait so we can tap the cell
 		XCTAssertTrue(exists, "Should be able to find Bitcoin cell")
 		cell.tap()
 		
