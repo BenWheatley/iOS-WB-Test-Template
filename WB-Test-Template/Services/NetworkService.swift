@@ -123,6 +123,8 @@ extension NetworkService {
 }
 
 // MARK: - Asset icons for size
+// Note: Design doc says to *implement this API*, but doesn't say to actually *use* it anywhere
+// that everything is on the default icon is not listed as a bug, nor as a suggested UI feature, nor under bonus points
 
 extension NetworkService {
 	func assetIconsURL(iconSize: Int32, injectables: Injectables = injectables) -> URL? {
@@ -143,5 +145,57 @@ extension NetworkService {
 	
 	func fetchExchangeRateData(assetIdBase: String, assetIdQuote: String, injectables: Injectables = injectables) -> AnyPublisher<Data, Error> {
 		fetchDataPublisher(from: exchangeRateURL(assetIdBase: assetIdBase, assetIdQuote: assetIdQuote, injectables: injectables), retryAttempts: 3, injectables: injectables)
+	}
+}
+
+// MARK: - Exchange rate time series for (base, quote) pair
+
+extension NetworkService {
+	// I could also get valid time periods from the API, but that's not part of the design doc
+	enum TimeseriesPeriod: String {
+		case second1 = "1SEC"
+		case second2 = "2SEC"
+		case second3 = "3SEC"
+		case second4 = "4SEC"
+		case second5 = "5SEC"
+		case second6 = "6SEC"
+		case second10 = "10SEC"
+		case second15 = "15SEC"
+		case second20 = "20SEC"
+		case second30 = "30SEC"
+		
+		case minute1 = "1MIN"
+		case minute2 = "2MIN"
+		case minute3 = "3MIN"
+		case minute4 = "4MIN"
+		case minute5 = "5MIN"
+		case minute6 = "6MIN"
+		case minute10 = "10MIN"
+		case minute15 = "15MIN"
+		case minute20 = "20MIN"
+		case minute30 = "30MIN"
+		
+		case hour1 = "1HRS"
+		case hour2 = "2HRS"
+		case hour3 = "3HRS"
+		case hour4 = "4HRS"
+		case hour6 = "6HRS"
+		case hour8 = "8HRS"
+		case hour12 = "12HRS"
+		
+		case day1 = "1DAY"
+		case day2 = "2DAY"
+		case day3 = "3DAY"
+		case day5 = "5DAY"
+		case day7 = "7DAY"
+		case day10 = "10DAY"
+	}
+	
+	func exchangeRateTimeSeriesURL(assetIdBase: String, assetIdQuote: String, from: Date, to: Date, period: TimeseriesPeriod = .day1, injectables: Injectables = injectables) -> URL? {
+		URL(string: "\(injectables.baseURL)/exchangerate/\(assetIdBase)/\(assetIdQuote)/history?period_id=\(period.rawValue)&time_start=\(from.ISO8601Format())&time_end=\(to.ISO8601Format())")
+	}
+	
+	func fetchExchangeRateTimeSeriesData(assetIdBase: String, assetIdQuote: String, from: Date, to: Date, injectables: Injectables = injectables) -> AnyPublisher<Data, Error> {
+		fetchDataPublisher(from: exchangeRateTimeSeriesURL(assetIdBase: assetIdBase, assetIdQuote: assetIdQuote, from: from, to: to, injectables: injectables), retryAttempts: 3, injectables: injectables)
 	}
 }

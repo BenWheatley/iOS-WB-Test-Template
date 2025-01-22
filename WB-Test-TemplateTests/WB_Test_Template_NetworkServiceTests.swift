@@ -116,4 +116,8 @@ struct WB_Test_Template_NetworkServiceTests {
 	@Test func testExchangeRateURL() {
 		#expect( NetworkService.shared.exchangeRateURL(assetIdBase: "some-id", assetIdQuote: "some-other-id") != nil )
 	}
+	
+	@Test func testExchangeRateTimeSeriesURL() {
+		#expect( NetworkService.shared.exchangeRateTimeSeriesURL(assetIdBase: "some-id", assetIdQuote: "some-other-id", from: .init(timeIntervalSince1970: 0), to: .init(timeIntervalSince1970: 3600)) != nil )
+	}
 }

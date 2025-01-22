@@ -115,6 +115,41 @@ final class WB_Test_TemplateTests: XCTestCase {
 		wait(for: [expectation], timeout: 1)
 	}
 	
+	func testIntegratedFetchAndParse_ExchangeRateTimeSeriesData() {
+		let expectation = XCTestExpectation(description: "Fetch and parse exchange rate time series")
+		var cancellables = Set<AnyCancellable>()
+		let testInjectables = TestInjectables(networkPathStatus: .satisfied, mockStatusCode: 200, mockResourceName: "test-asset-exchangerate-time-series=BTC-USD")
+		let assetIdBase = "BTC"
+		let assetIdQuote = "USD"
+		let startDate = Date(timeIntervalSince1970: 0)
+		let endDate = Date(timeIntervalSince1970: 3600)
+		let exchangeRateDataPublisher = NetworkService.shared.fetchExchangeRateTimeSeriesData(assetIdBase: assetIdBase, assetIdQuote: assetIdQuote, from: startDate, to: endDate, injectables: testInjectables)
+		exchangeRateDataPublisher.sink(receiveCompletion: { completion in
+			switch completion {
+			case .finished: break
+			case .failure(let error): XCTFail("Could not fetch exchange rate time series data from mock network: \(error.localizedDescription)")
+			}
+		}, receiveValue: { data in
+			guard let timeSeries = try? TimeSeriesData.tryToDecodeArray(from: data) else {
+				XCTFail("Could not parse exchange rate time series data from network")
+				return
+			}
+			XCTAssertEqual(timeSeries.count, 32)
+			let first = timeSeries.first! // Implict unwrap fine in a test: if it crashes, during testing is a good time for it
+			XCTAssertGreaterThanOrEqual(first.rateHigh!, first.rateOpen!)
+			XCTAssertGreaterThanOrEqual(first.rateHigh!, first.rateClose!)
+			XCTAssertGreaterThanOrEqual(first.rateHigh!, first.rateLow!)
+			XCTAssertGreaterThanOrEqual(first.rateHigh!, 0)
+			XCTAssertLessThanOrEqual(first.rateLow!, first.rateOpen!)
+			XCTAssertLessThanOrEqual(first.rateLow!, first.rateClose!)
+			XCTAssertGreaterThanOrEqual(first.rateLow!, 0)
+			expectation.fulfill()
+		})
+		.store(in: &cancellables)
+		
+		wait(for: [expectation], timeout: 1)
+	}
+	
 	func testRequestRetryMechanism() {
 		testRequestRetryMechanism(shouldRetry: true)
 		testRequestRetryMechanism(shouldRetry: false)
