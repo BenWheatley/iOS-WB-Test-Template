@@ -17,7 +17,7 @@ final class WB_Test_TemplateUITests: XCTestCase {
 	 [x] Use favourites filter
 	 [x] View specific currency details
 	 [x] Mark specific currency as favorite
-	 [ ] Refresh currency data
+	 [x] Refresh currency data
 	 
 	 The way these tests are currently functioning is more like a full integration test than a pure UI test
 	 
