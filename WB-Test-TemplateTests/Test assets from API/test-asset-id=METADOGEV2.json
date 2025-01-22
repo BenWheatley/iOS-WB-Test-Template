@@ -1,0 +1,20 @@
+[
+  {
+	"asset_id": "METADOGEV2",
+	"name": "METADOGEV2",
+	"type_is_crypto": 1,
+	"data_quote_start": "2022-02-15T00:00:00.0000000Z",
+	"data_quote_end": "2024-12-15T00:00:00.0000000Z",
+	"data_orderbook_start": "2022-02-18T00:00:00.0000000Z",
+	"data_orderbook_end": "2023-07-06T00:00:00.0000000Z",
+	"data_trade_start": "2022-02-15T00:00:00.0000000Z",
+	"data_trade_end": "2024-12-15T00:00:00.0000000Z",
+	"data_symbols_count": 1,
+	"volume_1hrs_usd": 0,
+	"volume_1day_usd": 0,
+	"volume_1mth_usd": 5.72,
+	"price_usd": 0.0000003199230640588,
+	"data_start": "2022-02-15",
+	"data_end": "2024-12-15"
+  }
+]

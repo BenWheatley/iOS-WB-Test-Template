@@ -1,44 +1,201 @@
 import Foundation
-
-enum NetworkError: Error {
-    case invalidURL
-    case noData
-    case decodingError
-    case serverError(String)
-}
+import Network
+import Combine
 
 class NetworkService {
-    static let shared = NetworkService()
-    private let apiKey = "9A52912A-724F-493D-90A4-8E7066C15B2E"
-    private let baseURL = "https://rest.coinapi.io/v1"
-    private init() {}
-    
-    func fetchAssets() async throws -> [Asset] {
-        let dataTask = { [self] in  
-            guard let url = URL(string: "\(baseURL)/assets") else {
-                throw NetworkError.invalidURL
-            }
-            var request = URLRequest(url: url)
-            request.addValue(apiKey, forHTTPHeaderField: "X-CoinAPI-Key")
-            
-            let (data, response) = try await URLSession.shared.data(for: request)
-            
-            guard let httpResponse = response as? HTTPURLResponse,
-                  httpResponse.statusCode == 200 else {
-                throw NetworkError.serverError("Invalid server response")
-            }
-            
-            do {
-                return try JSONDecoder().decode(
-                    [Asset].self, from: data
-                )
-            } catch {
-                throw NetworkError.decodingError
-            }
-        }
-        return try await dataTask()
-        
+	static let shared = NetworkService()
+	
+	protocol Injectables {
+		var apiKey: String { get }
+		var baseURL: String { get }
+		var networkPathStatus: NWPath.Status? { get }
+		var dataFetcher: DataFetcher { get }
+	}
+	
+	// Private inner class: nobody outside this class should ever need to see, or care about, the contents of this. Test-time usage should refer only to `Injectables` protocol for dependency injection.
+	private static let injectables: Injectables = {
+		class DefaultInjectables: Injectables {
+			let apiKey = "9A52912A-724F-493D-90A4-8E7066C15B2E"
+			let baseURL = "https://rest.coinapi.io/v1"
+			let dataFetcher: DataFetcher = URLSession.shared
+			
+			// Network status — `Reachability` was the old way, `Network` is the new way:
+			private let networkPathMonitor = NWPathMonitor()
+			var networkPathStatus: NWPath.Status?
+			private let networkStatusDispatchQueue = DispatchQueue(label: "Network status monitor")
+			
+			init() {
+				networkPathMonitor.pathUpdateHandler = { [weak self] path in
+					self?.networkPathStatus = path.status // We're only using the `status` property at this time, so we don't need to care about storing the *entire* NWPath value
+				}
+				networkPathMonitor.start(queue: networkStatusDispatchQueue)
+			}
+		}
+		return DefaultInjectables()
+	}()
+	
+	func fetchDataPublisher(from url: URL?, retryAttempts: Int, injectables: Injectables = injectables) -> AnyPublisher<Data, Error> {
+		Future { [weak self] promise in
+			Task {
+				guard let self else {
+					// If weak `self` has been deallocated, fail the Future with a `CancellationError`. As NetworkService is a singleton (at the time I write this comment) this can only happen on app shutdown, but being defensive about this means that if I re-write this as not a singleton later (which I've been considering, so it's not premature optimisation to account for that here), this is one less thing to get wrong
+					promise(.failure(CancellationError()))
+					return
+				}
+				do {
+					let data = try await self.fetchData(from: url, injectables: injectables)
+					promise(.success(data))
+				} catch {
+					promise(.failure(error))
+				}
+			}
+		}
+		.retry(retryAttempts) // Note: out of scope for task documentation, but this should really be more more complex: a 401 should never retry (unauthorized), and a 429 (too many requests) must *delay* retries. See e.g. https://www.donnywals.com/retrying-a-network-request-with-a-delay-in-combine/ for possible approaches.
+		.eraseToAnyPublisher()
+	}
+	
+	// Note: out of scope for task documentation, but if this was a real project, I would argue that `NetworkService` should become a separate module, as `func fetchData` shouldn't be directly accessible from the app, but needs to be internal so it can be tested
+	internal func fetchData(from url: URL?, injectables: Injectables = injectables) async throws -> Data {
+		guard let url else {
+			throw NetworkError.invalidURL
+		}
+		
+		// injectables.networkPathStatus may be nil if this is the first call and it's not completed startup yet
+		if injectables.networkPathStatus == nil {
+			// I would use `try await Task.sleep(for: .seconds(2))` but the project minimum deployment says iOS 15 and .seconds was introduced in 16
+			try await Task.sleep(nanoseconds: UInt64(2 * 1_000_000_000))
+		}
+		// no point continuing to wait: if it is still nil, that's likely an error that the user should care about
+		guard injectables.networkPathStatus == .satisfied else {
+			throw NetworkError.offline
+		}
+		
+		let request = buildRequest(url: url)
+		let (data, response) = try await injectables.dataFetcher.data(for: request, delegate: nil) // Have to explicitly provide `delegate: nil`, because I've abstracted up from URLSession to a protocol so I can mock this, but protocols don't allow default arguments (I could also have created a func without that argument at all, passed through to that, but that would then need additional tests and so it doesn't help keep this simple)
+		
+		guard let httpResponse = response as? HTTPURLResponse else {
+			// If we get here, there's an error in the Apple API docs, which claim that "Whenever you make HTTP URL load requests, any response objects you get back from the URLSession, NSURLConnection, or NSURLDownload class are instances of the HTTPURLResponse class."
+			throw NetworkError.serverError(nil, "Unknown error — not a HTTPURLResponse")
+		}
+		guard httpResponse.statusCode == 200 else { // Note: API docs specifically claim that "You should always check that your HTTP response status code is equal to 200, otherwise the requested was not successful.", and that "All HTTP requests with response status codes different to 200 must be considered as failed and you should expect additional JSON inside the body of the response with the error message encapsulated inside it as shown in the example. We use the following error codes:" [400, 401, 403, 429, 550] - https://docs.coinapi.io/market-data/rest-api/
+			let errorMessage: String
+			if let serverError = try? ServerError(from: data) {
+				errorMessage = serverError.error
+			} else {
+				errorMessage = "Invalid server response, error message not parsed: \(String(data: data, encoding: .utf8) ?? "could not decode response as string")"
+			}
+			throw NetworkError.serverError(.init(statusCode: httpResponse.statusCode), errorMessage)
+		}
+		
+		return data
+	}
+	
+	func buildRequest(url: URL, injectables: Injectables = injectables) -> URLRequest {
+		var request = URLRequest(url: url)
+		request.addValue(injectables.apiKey, forHTTPHeaderField: "X-CoinAPI-Key")
+		request.addValue("br, gzip", forHTTPHeaderField: "Accept-Encoding") // Requested in API documentation, but not mandatory: https://docs.coinapi.io/market-data/rest-api/
+		return request
+	}
+}
+
+// MARK: - Assets (plural)
+
+extension NetworkService {
+	func assetsURL(injectables: Injectables = injectables) -> URL? {
+		URL(string: "\(injectables.baseURL)/assets")
+	}
+	
+	func fetchAssetsData(injectables: Injectables = injectables) -> AnyPublisher<Data, Error> {
+		fetchDataPublisher(from: assetsURL(injectables: injectables), retryAttempts: 3, injectables: injectables)
     }
-    
-    // Add other network calls here
-} 
+}
+
+// MARK: - Single asset by ID
+
+extension NetworkService {
+	func assetURL(id: String, injectables: Injectables = injectables) -> URL? {
+		URL(string: "\(injectables.baseURL)/assets/\(id)")
+	}
+	
+	func fetchAssetData(id: String, injectables: Injectables = injectables) -> AnyPublisher<Data, Error> {
+		fetchDataPublisher(from: assetURL(id: id, injectables: injectables), retryAttempts: 3, injectables: injectables)
+	}
+}
+
+// MARK: - Asset icons for size
+// Note: Design doc says to *implement this API*, but doesn't say to actually *use* it anywhere
+// that everything is on the default icon is not listed as a bug, nor as a suggested UI feature, nor under bonus points
+
+extension NetworkService {
+	func assetIconsURL(iconSize: Int32, injectables: Injectables = injectables) -> URL? {
+		URL(string: "\(injectables.baseURL)/assets/icons/\(iconSize)")
+	}
+	
+	func fetchAssetIconsData(iconSize: Int32, injectables: Injectables = injectables) -> AnyPublisher<Data, Error> {
+		fetchDataPublisher(from: assetIconsURL(iconSize: iconSize, injectables: injectables), retryAttempts: 3, injectables: injectables)
+	}
+}
+
+// MARK: - Exchange rates for (base, quote) pair
+
+extension NetworkService {
+	func exchangeRateURL(assetIdBase: String, assetIdQuote: String, injectables: Injectables = injectables) -> URL? {
+		URL(string: "\(injectables.baseURL)/exchangerate/\(assetIdBase)/\(assetIdQuote)")
+	}
+	
+	func fetchExchangeRateData(assetIdBase: String, assetIdQuote: String, injectables: Injectables = injectables) -> AnyPublisher<Data, Error> {
+		fetchDataPublisher(from: exchangeRateURL(assetIdBase: assetIdBase, assetIdQuote: assetIdQuote, injectables: injectables), retryAttempts: 3, injectables: injectables)
+	}
+}
+
+// MARK: - Exchange rate time series for (base, quote) pair
+
+extension NetworkService {
+	// I could also get valid time periods from the API, but that's not part of the design doc
+	enum TimeseriesPeriod: String {
+		case second1 = "1SEC"
+		case second2 = "2SEC"
+		case second3 = "3SEC"
+		case second4 = "4SEC"
+		case second5 = "5SEC"
+		case second6 = "6SEC"
+		case second10 = "10SEC"
+		case second15 = "15SEC"
+		case second20 = "20SEC"
+		case second30 = "30SEC"
+		
+		case minute1 = "1MIN"
+		case minute2 = "2MIN"
+		case minute3 = "3MIN"
+		case minute4 = "4MIN"
+		case minute5 = "5MIN"
+		case minute6 = "6MIN"
+		case minute10 = "10MIN"
+		case minute15 = "15MIN"
+		case minute20 = "20MIN"
+		case minute30 = "30MIN"
+		
+		case hour1 = "1HRS"
+		case hour2 = "2HRS"
+		case hour3 = "3HRS"
+		case hour4 = "4HRS"
+		case hour6 = "6HRS"
+		case hour8 = "8HRS"
+		case hour12 = "12HRS"
+		
+		case day1 = "1DAY"
+		case day2 = "2DAY"
+		case day3 = "3DAY"
+		case day5 = "5DAY"
+		case day7 = "7DAY"
+		case day10 = "10DAY"
+	}
+	
+	func exchangeRateTimeSeriesURL(assetIdBase: String, assetIdQuote: String, from: Date, to: Date, period: TimeseriesPeriod = .day1, injectables: Injectables = injectables) -> URL? {
+		URL(string: "\(injectables.baseURL)/exchangerate/\(assetIdBase)/\(assetIdQuote)/history?period_id=\(period.rawValue)&time_start=\(from.ISO8601Format())&time_end=\(to.ISO8601Format())")
+	}
+	
+	func fetchExchangeRateTimeSeriesData(assetIdBase: String, assetIdQuote: String, from: Date, to: Date, injectables: Injectables = injectables) -> AnyPublisher<Data, Error> {
+		fetchDataPublisher(from: exchangeRateTimeSeriesURL(assetIdBase: assetIdBase, assetIdQuote: assetIdQuote, from: from, to: to, injectables: injectables), retryAttempts: 3, injectables: injectables)
+	}
+}
