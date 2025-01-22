@@ -114,6 +114,6 @@ struct WB_Test_Template_NetworkServiceTests {
 	}
 
 	@Test func testExchangeRateURL() {
-		#expect( NetworkService.shared.assetIconsURL(iconSize: 123) != nil )
+		#expect( NetworkService.shared.exchangeRateURL(assetIdBase: "some-id", assetIdQuote: "some-other-id") != nil )
 	}
 }
